@@ -15,9 +15,8 @@ class MainViewModel @Inject constructor(
     private val repository: MainRepository
     ) : ViewModel() {
 
-        private val currentQuery = MutableLiveData(DEFAULT_SEARCH_TERM)
-        val imageSearchResult = currentQuery.switchMap { query ->
-            Timber.d("SwitchMap is modified.")
+    private val currentQuery = MutableLiveData(DEFAULT_SEARCH_TERM)
+    val imageSearchResult = currentQuery.switchMap { query ->
             fetchSearchResults(query)
         }
 
@@ -27,15 +26,19 @@ class MainViewModel @Inject constructor(
             .cachedIn(viewModelScope)
     }
 
-
-        fun searchImages(query : String) {
-            currentQuery.value = query
-            Timber.d("Search query is $currentQuery")
-        }
+    fun fetchDefaultCollection() : LiveData<PagingData<UnsplashPhotoEntity>> {
+        return repository.getDefaultCollection().cachedIn(viewModelScope)
+    }
 
 
-        companion object {
-            private const val DEFAULT_COLLECTION_ID = 2423569
-            private const val DEFAULT_SEARCH_TERM = "cats"
-        }
+    fun searchImages(query : String) {
+        currentQuery.value = query
+        Timber.d("Search query is $currentQuery")
+    }
+
+
+    companion object {
+        private const val DEFAULT_COLLECTION_ID = 2423569
+        private const val DEFAULT_SEARCH_TERM = "cats"
+    }
     }

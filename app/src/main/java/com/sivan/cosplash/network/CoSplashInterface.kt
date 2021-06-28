@@ -1,5 +1,6 @@
 package com.sivan.cosplash.network
 
+import com.sivan.cosplash.network.entity.UnsplashPhotoEntity
 import com.sivan.cosplash.network.entity.UnsplashResponseEntity
 import retrofit2.http.GET
 import retrofit2.http.Path
@@ -18,6 +19,6 @@ interface CoSplashInterface {
     suspend fun getCollectionById(
         @Path("id") id : Int,
         @Query("page") page : Int,
-        @Query("per_page") perPage : Int) : UnsplashResponseEntity
+        @Query("per_page") perPage : Int) : List<UnsplashPhotoEntity>
 
 }

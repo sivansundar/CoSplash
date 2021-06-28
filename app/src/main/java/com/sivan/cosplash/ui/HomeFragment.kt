@@ -62,7 +62,7 @@ class HomeFragment : Fragment() {
 
         val adapter = CoSplashPhotoAdapter()
 
-        mainViewModel.imageSearchResult.observe(viewLifecycleOwner, {
+        mainViewModel.fetchDefaultCollection().observe(viewLifecycleOwner, {
             adapter.submitData(viewLifecycleOwner.lifecycle, it)
         })
 
@@ -100,7 +100,7 @@ class HomeFragment : Fragment() {
                 Timber.d("Clicked")
                 // Handle Search function. Change switchmap value
 
-                searchPhotos(v.text.toString())
+                //searchPhotos(v.text.toString())
 
                 hideKeyboard()
             }
