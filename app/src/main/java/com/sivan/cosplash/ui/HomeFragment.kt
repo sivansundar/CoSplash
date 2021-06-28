@@ -7,10 +7,17 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.widget.Toast
+import androidx.fragment.app.viewModels
+import androidx.paging.map
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.google.android.material.textfield.TextInputEditText
+import com.sivan.cosplash.CoSplashPhotoAdapter
 import com.sivan.cosplash.R
 import com.sivan.cosplash.databinding.FragmentHomeBinding
 import com.sivan.cosplash.hideKeyboard
+import com.sivan.cosplash.viewmodel.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
 
@@ -34,6 +41,8 @@ class HomeFragment : Fragment() {
 
     lateinit var searchBoxTextInput : TextInputEditText
 
+    private val mainViewModel by viewModels<MainViewModel>()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -51,6 +60,29 @@ class HomeFragment : Fragment() {
 
         bindUIComponents()
 
+        val adapter = CoSplashPhotoAdapter()
+
+        mainViewModel.imageSearchResult.observe(viewLifecycleOwner, {
+            adapter.submitData(viewLifecycleOwner.lifecycle, it)
+        })
+
+
+        val staggeredGridLayoutManager = StaggeredGridLayoutManager(2, LinearLayoutManager.VERTICAL)
+        staggeredGridLayoutManager.gapStrategy = StaggeredGridLayoutManager.GAP_HANDLING_NONE
+
+        val gridLayoutManager = GridLayoutManager(context, 2, GridLayoutManager.VERTICAL, false);
+
+        val linearLayoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+
+        binding.apply {
+            recyclerView.setHasFixedSize(true)
+            recyclerView.adapter = adapter
+            recyclerView.setHasFixedSize(true)
+           // recyclerView.isNestedScrollingEnabled = false
+            recyclerView.layoutManager = linearLayoutManager
+
+        }
+
         return binding.root
     }
 
@@ -58,6 +90,7 @@ class HomeFragment : Fragment() {
         searchBoxTextInput = binding.searchBoxTextInput
 
         setupSearchBox()
+
     }
 
     private fun setupSearchBox() {
@@ -66,10 +99,17 @@ class HomeFragment : Fragment() {
                 Toast.makeText(context, "Clicked", Toast.LENGTH_SHORT).show()
                 Timber.d("Clicked")
                 // Handle Search function. Change switchmap value
+
+                searchPhotos(v.text.toString())
+
                 hideKeyboard()
             }
             true
         }
+    }
+
+    private fun searchPhotos(searchText: String) {
+        mainViewModel.searchImages(searchText)
     }
 
     companion object {

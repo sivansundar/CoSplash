@@ -16,7 +16,7 @@ interface CoSplashInterface {
 
     @GET("collections/{id}/photos")
     suspend fun getCollectionById(
-        @Path("id") query : String,
+        @Path("id") id : Int,
         @Query("page") page : Int,
         @Query("per_page") perPage : Int) : UnsplashResponseEntity
 
