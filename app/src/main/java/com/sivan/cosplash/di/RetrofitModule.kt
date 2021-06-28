@@ -51,6 +51,7 @@ object RetrofitModule {
                 .addInterceptor(logging)
                 .addInterceptor {
                     val requestBuilder = it.request().newBuilder()
+                        .addHeader("Accept-Version", "v1")
                         .addHeader("Authorization", BuildConfig.ACCESS_KEY)
 
                     it.proceed(requestBuilder.build())
