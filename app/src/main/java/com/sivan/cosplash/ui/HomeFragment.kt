@@ -7,16 +7,25 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.widget.Toast
+import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
+import androidx.paging.LoadState
 import androidx.paging.map
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import com.google.android.flexbox.FlexDirection
+import com.google.android.flexbox.FlexboxLayoutManager
+import com.google.android.flexbox.JustifyContent
 import com.google.android.material.textfield.TextInputEditText
 import com.sivan.cosplash.CoSplashPhotoAdapter
 import com.sivan.cosplash.R
 import com.sivan.cosplash.databinding.FragmentHomeBinding
 import com.sivan.cosplash.hideKeyboard
+import com.sivan.cosplash.network.entity.UnsplashPhotoEntity
+import com.sivan.cosplash.paging.PagingLoadStateAdapter
+import com.sivan.cosplash.util.OnItemClick
 import com.sivan.cosplash.viewmodel.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
@@ -32,7 +41,7 @@ private const val ARG_PARAM2 = "param2"
  * create an instance of this fragment.
  */
 @AndroidEntryPoint
-class HomeFragment : Fragment() {
+class HomeFragment : Fragment(), OnItemClick {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
@@ -40,6 +49,8 @@ class HomeFragment : Fragment() {
     lateinit var binding: FragmentHomeBinding
 
     lateinit var searchBoxTextInput : TextInputEditText
+
+    lateinit var adapter: CoSplashPhotoAdapter
 
     private val mainViewModel by viewModels<MainViewModel>()
 
@@ -59,31 +70,82 @@ class HomeFragment : Fragment() {
         binding = FragmentHomeBinding.inflate(inflater)
 
         bindUIComponents()
+        adapter = CoSplashPhotoAdapter(this)
 
-        val adapter = CoSplashPhotoAdapter()
+        val headerAdapter = PagingLoadStateAdapter { adapter.retry() }
+        val footerAdapter = PagingLoadStateAdapter { adapter.retry() }
 
+        val concatAdapter = adapter.withLoadStateHeaderAndFooter(
+            header = headerAdapter,
+            footer = footerAdapter
+        )
+
+        getCollection()
+
+
+        val gridLayoutManager = GridLayoutManager(context, 2)
+
+
+
+
+        binding.apply {
+            recyclerView.adapter = concatAdapter
+            recyclerView.layoutManager = gridLayoutManager
+
+            gridLayoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
+                override fun getSpanSize(position: Int): Int {
+                    return if (position == 0 && headerAdapter.itemCount > 0) {
+                           2
+                    /*
+                        If we are at first position and header exists,
+                        set span size to 2 so that the entire width is taken
+                        */
+
+                    } else if (position == concatAdapter.itemCount - 1 && footerAdapter.itemCount > 0) {
+                           2
+                        /*
+                        At last position and footer exists,
+                        set span size to 2 so that the entire width is taken
+                        */
+
+                    } else {
+                        1
+                        // If we are not at the top or bottom positions in the list, then set span size to 1
+
+                    }
+                }
+            }
+
+        }
+
+
+        adapter.addLoadStateListener { combinedLoadStates ->
+            binding.apply {
+                progressCircular.isVisible = combinedLoadStates.source.refresh is LoadState.Loading
+                recyclerView.isVisible = combinedLoadStates.source.refresh is LoadState.NotLoading
+                retryButton.isVisible = combinedLoadStates.source.refresh is LoadState.Error
+                loadStateCollectionText.isVisible = combinedLoadStates.source.refresh is LoadState.Error
+            }
+
+        }
+
+        binding.retryButton.setOnClickListener {
+            adapter.retry()
+        }
+
+
+        return binding.root
+    }
+
+    private fun getCollection() {
         mainViewModel.fetchDefaultCollection().observe(viewLifecycleOwner, {
             adapter.submitData(viewLifecycleOwner.lifecycle, it)
         })
 
+//          mainViewModel.imageSearchResult.observe(viewLifecycleOwner, {
+//            adapter.submitData(viewLifecycleOwner.lifecycle, it)
+//        })
 
-        val staggeredGridLayoutManager = StaggeredGridLayoutManager(2, LinearLayoutManager.VERTICAL)
-        staggeredGridLayoutManager.gapStrategy = StaggeredGridLayoutManager.GAP_HANDLING_NONE
-
-        val gridLayoutManager = GridLayoutManager(context, 2, GridLayoutManager.VERTICAL, false);
-
-        val linearLayoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-
-        binding.apply {
-            recyclerView.setHasFixedSize(true)
-            recyclerView.adapter = adapter
-            recyclerView.setHasFixedSize(true)
-           // recyclerView.isNestedScrollingEnabled = false
-            recyclerView.layoutManager = linearLayoutManager
-
-        }
-
-        return binding.root
     }
 
     private fun bindUIComponents() {
@@ -100,7 +162,7 @@ class HomeFragment : Fragment() {
                 Timber.d("Clicked")
                 // Handle Search function. Change switchmap value
 
-                //searchPhotos(v.text.toString())
+                searchPhotos(v.text.toString())
 
                 hideKeyboard()
             }
@@ -130,5 +192,10 @@ class HomeFragment : Fragment() {
                     putString(ARG_PARAM2, param2)
                 }
             }
+    }
+
+    override fun onItemClick(imageUrls: UnsplashPhotoEntity.ImageUrls) {
+        // Handles image clicks from the recyclerView. We can use this to navigate to another fragment
+
     }
 }

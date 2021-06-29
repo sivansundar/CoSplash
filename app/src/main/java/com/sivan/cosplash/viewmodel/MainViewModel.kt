@@ -37,6 +37,13 @@ class MainViewModel @Inject constructor(
     }
 
 
+    private val loadStateTextMLD = MutableLiveData<String>()
+    val loadStateText : LiveData<String> = loadStateTextMLD
+
+    fun setLoadStateText(text : String) {
+        loadStateTextMLD.value = text
+    }
+
     companion object {
         private const val DEFAULT_COLLECTION_ID = 2423569
         private const val DEFAULT_SEARCH_TERM = "cats"

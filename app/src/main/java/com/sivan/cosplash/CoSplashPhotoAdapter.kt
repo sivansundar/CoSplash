@@ -8,10 +8,13 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import coil.Coil
 import coil.load
+import coil.size.Scale
 import com.sivan.cosplash.databinding.PhotoItemBinding
 import com.sivan.cosplash.network.entity.UnsplashPhotoEntity
+import com.sivan.cosplash.util.OnItemClick
 
-class CoSplashPhotoAdapter : PagingDataAdapter<UnsplashPhotoEntity, CoSplashPhotoAdapter.PhotoViewHolder>(PHOTO_COMPARATOR) {
+class CoSplashPhotoAdapter(private val listener : OnItemClick) : PagingDataAdapter<UnsplashPhotoEntity, CoSplashPhotoAdapter.PhotoViewHolder>(PHOTO_COMPARATOR) {
+
 
     override fun onBindViewHolder(holder: PhotoViewHolder, position: Int) {
         val currentItem = getItem(position)
@@ -30,12 +33,25 @@ class CoSplashPhotoAdapter : PagingDataAdapter<UnsplashPhotoEntity, CoSplashPhot
     inner class PhotoViewHolder(private val binding: PhotoItemBinding) :
         RecyclerView.ViewHolder(binding.root){
 
+        init {
+            val position = bindingAdapterPosition
+            if (position != RecyclerView.NO_POSITION) {
+                val item = getItem(position)
+                if (item != null) {
+                    listener.onItemClick(item.image_urls)
+                }
+            }
+        }
+
         fun bind(photo : UnsplashPhotoEntity) {
             binding.apply {
                 imageView.load(photo.image_urls.thumb) {
                     crossfade(true)
+                    placeholder(R.drawable.ic_baseline_photo_72)
+                    error(R.drawable.ic_baseline_error_outline_72)
                 }
             }
+
         }
     }
 
