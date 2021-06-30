@@ -9,15 +9,13 @@ import android.view.inputmethod.EditorInfo
 import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
-import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import androidx.paging.LoadState
 import androidx.recyclerview.widget.GridLayoutManager
 import com.google.android.material.textfield.TextInputEditText
 import com.sivan.cosplash.CoSplashPhotoAdapter
-import com.sivan.cosplash.R
 import com.sivan.cosplash.databinding.FragmentHomeBinding
-import com.sivan.cosplash.hideKeyboard
+import com.sivan.cosplash.util.hideKeyboard
 import com.sivan.cosplash.network.entity.UnsplashPhotoEntity
 import com.sivan.cosplash.paging.PagingLoadStateAdapter
 import com.sivan.cosplash.util.OnItemClick
@@ -66,7 +64,7 @@ class HomeFragment : Fragment(), OnItemClick {
 
         bindUIComponents()
 
-        getCollection()
+        //getCollection()
 
         return binding.root
     }
@@ -166,7 +164,11 @@ class HomeFragment : Fragment(), OnItemClick {
     }
 
     private fun searchPhotos(searchText: String) {
-        mainViewModel.searchImages(searchText)
+        //mainViewModel.searchImages(searchText)
+
+        // Navigate to search fragment
+        val action = HomeFragmentDirections.actionHomeFragmentToSearchFragment(searchText)
+        findNavController().navigate(action)
     }
 
     companion object {

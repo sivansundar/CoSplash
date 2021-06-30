@@ -1,4 +1,4 @@
-package com.sivan.cosplash
+package com.sivan.cosplash.util
 
 import android.app.Activity
 import android.content.Context
