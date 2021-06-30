@@ -9,15 +9,10 @@ import android.view.inputmethod.EditorInfo
 import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
+import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import androidx.paging.LoadState
-import androidx.paging.map
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.StaggeredGridLayoutManager
-import com.google.android.flexbox.FlexDirection
-import com.google.android.flexbox.FlexboxLayoutManager
-import com.google.android.flexbox.JustifyContent
 import com.google.android.material.textfield.TextInputEditText
 import com.sivan.cosplash.CoSplashPhotoAdapter
 import com.sivan.cosplash.R
@@ -70,6 +65,33 @@ class HomeFragment : Fragment(), OnItemClick {
         binding = FragmentHomeBinding.inflate(inflater)
 
         bindUIComponents()
+
+        getCollection()
+
+        return binding.root
+    }
+
+    private fun getCollection() {
+        mainViewModel.fetchDefaultCollection().observe(viewLifecycleOwner, {
+            adapter.submitData(viewLifecycleOwner.lifecycle, it)
+        })
+
+//          mainViewModel.imageSearchResult.observe(viewLifecycleOwner, {
+//            adapter.submitData(viewLifecycleOwner.lifecycle, it)
+//        })
+
+    }
+
+    private fun bindUIComponents() {
+        searchBoxTextInput = binding.searchBoxTextInput
+
+        setupSearchBox()
+
+        setupRecyclerView()
+
+    }
+
+    private fun setupRecyclerView() {
         adapter = CoSplashPhotoAdapter(this)
 
         val headerAdapter = PagingLoadStateAdapter { adapter.retry() }
@@ -80,13 +102,7 @@ class HomeFragment : Fragment(), OnItemClick {
             footer = footerAdapter
         )
 
-        getCollection()
-
-
         val gridLayoutManager = GridLayoutManager(context, 2)
-
-
-
 
         binding.apply {
             recyclerView.adapter = concatAdapter
@@ -95,14 +111,14 @@ class HomeFragment : Fragment(), OnItemClick {
             gridLayoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
                 override fun getSpanSize(position: Int): Int {
                     return if (position == 0 && headerAdapter.itemCount > 0) {
-                           2
-                    /*
-                        If we are at first position and header exists,
-                        set span size to 2 so that the entire width is taken
-                        */
+                        2
+                        /*
+                            If we are at first position and header exists,
+                            set span size to 2 so that the entire width is taken
+                            */
 
                     } else if (position == concatAdapter.itemCount - 1 && footerAdapter.itemCount > 0) {
-                           2
+                        2
                         /*
                         At last position and footer exists,
                         set span size to 2 so that the entire width is taken
@@ -132,27 +148,6 @@ class HomeFragment : Fragment(), OnItemClick {
         binding.retryButton.setOnClickListener {
             adapter.retry()
         }
-
-
-        return binding.root
-    }
-
-    private fun getCollection() {
-        mainViewModel.fetchDefaultCollection().observe(viewLifecycleOwner, {
-            adapter.submitData(viewLifecycleOwner.lifecycle, it)
-        })
-
-//          mainViewModel.imageSearchResult.observe(viewLifecycleOwner, {
-//            adapter.submitData(viewLifecycleOwner.lifecycle, it)
-//        })
-
-    }
-
-    private fun bindUIComponents() {
-        searchBoxTextInput = binding.searchBoxTextInput
-
-        setupSearchBox()
-
     }
 
     private fun setupSearchBox() {
@@ -194,8 +189,10 @@ class HomeFragment : Fragment(), OnItemClick {
             }
     }
 
-    override fun onItemClick(imageUrls: UnsplashPhotoEntity.ImageUrls) {
+    override fun onItemClick(photoEntity: UnsplashPhotoEntity) {
         // Handles image clicks from the recyclerView. We can use this to navigate to another fragment
+        val action = HomeFragmentDirections.actionHomeFragmentToDetailsFragment(photoEntity)
+        findNavController().navigate(action)
 
     }
 }

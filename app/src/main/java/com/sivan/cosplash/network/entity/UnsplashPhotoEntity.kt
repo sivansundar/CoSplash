@@ -1,8 +1,11 @@
 package com.sivan.cosplash.network.entity
 
+import android.os.Parcelable
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
+import kotlinx.android.parcel.Parcelize
 
+@Parcelize
 data class UnsplashPhotoEntity(
 
     @SerializedName("id")
@@ -14,8 +17,9 @@ data class UnsplashPhotoEntity(
     var image_urls : ImageUrls
 
 
-) {
+) : Parcelable {
 
+    @Parcelize
     data class ImageUrls(
 
         @SerializedName("raw")
@@ -39,5 +43,5 @@ data class UnsplashPhotoEntity(
         var thumb : String,
 
 
-    )
+    ) : Parcelable
 }

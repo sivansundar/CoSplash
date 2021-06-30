@@ -4,5 +4,5 @@ import com.sivan.cosplash.network.entity.UnsplashPhotoEntity
 
 interface OnItemClick {
 
-    fun onItemClick(imageUrls : UnsplashPhotoEntity.ImageUrls)
+    fun onItemClick(photo : UnsplashPhotoEntity)
 }

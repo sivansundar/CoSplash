@@ -34,13 +34,16 @@ class CoSplashPhotoAdapter(private val listener : OnItemClick) : PagingDataAdapt
         RecyclerView.ViewHolder(binding.root){
 
         init {
-            val position = bindingAdapterPosition
-            if (position != RecyclerView.NO_POSITION) {
-                val item = getItem(position)
-                if (item != null) {
-                    listener.onItemClick(item.image_urls)
+            binding.root.setOnClickListener {
+                val position = bindingAdapterPosition
+                if (position != RecyclerView.NO_POSITION) {
+                    val item = getItem(position)
+                    if (item != null) {
+                        listener.onItemClick(item)
+                    }
                 }
             }
+
         }
 
         fun bind(photo : UnsplashPhotoEntity) {
