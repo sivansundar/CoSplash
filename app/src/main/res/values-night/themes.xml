@@ -24,6 +24,19 @@
         <item name="android:minHeight">48dp</item>
     </style>
 
+    <style name="Widget.App.Button.OutlinedButton.IconOnlyFilter" parent="Widget.MaterialComponents.Button.OutlinedButton">
+        <item name="iconPadding">0dp</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+        <item name="android:paddingLeft">12dp</item>
+        <item name="android:paddingRight">12dp</item>
+        <item name="android:minWidth">48dp</item>
+        <item name="android:minHeight">48dp</item>
+        <item name="strokeWidth">1dp</item>
+        <item name="strokeColor">#FAFAFA</item>
+    </style>
+
+
     <style name="Widget.MaterialComponents.Button.Filter" parent="Widget.MaterialComponents.Button">
         <item name="strokeColor">@color/purple_200</item>
         <item name="strokeWidth">2dp</item>

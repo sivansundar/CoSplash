@@ -11,4 +11,11 @@
     <color name="text_bold">#222B45</color>
     <color name="text_color_dark_blue">#2E3A59</color>
 
+    <color name="yellow">#FBC02D</color>
+    <color name="orange">#F57C00</color>
+    <color name="red">#D32F2F</color>
+    <color name="magenta">#FF00FF</color>
+    <color name="green">#388E3C</color>
+    <color name="blue">#1976D2</color>
+
 </resources>

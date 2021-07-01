@@ -6,14 +6,19 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.RadioButton
 import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.isVisible
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.button.MaterialButton
 import com.sivan.cosplash.R
+import com.sivan.cosplash.databinding.ActivityMainBinding.bind
 import com.sivan.cosplash.databinding.FragmentDetailsBinding
 import com.sivan.cosplash.databinding.FragmentSearchBinding
+import com.sivan.cosplash.util.RadioGridGroup
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -72,15 +77,55 @@ class SearchFragment : Fragment() {
         bottomSheetBehavior = BottomSheetBehavior.from(binding.filterBottomSheetRootLayout.filterRootLayout)
         bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
         
-        binding.filterBottomSheetRootLayout.apply { 
+        binding.filterBottomSheetRootLayout.apply {
             filterToolbar.setOnMenuItemClickListener {
                 Toast.makeText(context, "close", Toast.LENGTH_SHORT).show()
                 bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
                 true
             }
+
+            colorToggleButtonGroup.addOnButtonCheckedListener { group, checkedId, isChecked ->
+                when(checkedId) {
+                    R.id.any_color_button -> {
+                        tonesTitle.isVisible = true
+                        tonesToggleButtonGroup.isVisible = true
+                    }
+
+                    R.id.bw_color_button -> {
+                        tonesTitle.isVisible = false
+                        tonesToggleButtonGroup.isVisible = false
+                    }
+                }
+            }
+
+            clearButton.setOnClickListener {
+                setDefaultSelections()
+            }
+
+            applyButton.setOnClickListener {
+                when(tonesToggleButtonGroup.checkedCheckableImageButtonId) {
+                    R.id.yellow_icon -> {
+                        Toast.makeText(context, "YELLOW", Toast.LENGTH_SHORT).show()
+                    }
+                    R.id.orange_icon -> {
+
+                    }
+                }
+            }
+
+
         }
 
+    }
 
+    private fun setDefaultSelections() {
+        binding.filterBottomSheetRootLayout.apply {
+            sortByToggleButtonGroup.clearChecked()
+            anyColorButton.isChecked = true
+            tonesToggleButtonGroup.clearCheck()
+            orientationAnyButton.isChecked = true
+            contentFilterGroup.clearChecked()
+        }
     }
 
     companion object {

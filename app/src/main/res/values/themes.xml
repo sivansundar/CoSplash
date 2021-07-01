@@ -31,11 +31,24 @@
         <item name="android:minHeight">48dp</item>
     </style>
 
+    <style name="Widget.App.Button.OutlinedButton.IconOnlyFilter" parent="Widget.MaterialComponents.Button.OutlinedButton">
+        <item name="iconPadding">0dp</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+        <item name="android:paddingLeft">12dp</item>
+        <item name="android:paddingRight">12dp</item>
+        <item name="android:minWidth">48dp</item>
+        <item name="android:minHeight">48dp</item>
+        <item name="strokeWidth">1dp</item>
+    </style>
+
     <style name="ShapeAppearanceOverlay.MyApp.MaterialCardView.RoundedFilterSheet" parent="">
         <item name="cornerFamily">rounded</item>
         <item name="cornerSizeTopLeft">18dp</item>
         <item name="cornerSizeTopRight">18dp</item>
+
     </style>
+
 
     <style name="Widget.MaterialComponents.Button.OutlinedButton.Borderless" parent="Widget.MaterialComponents.Button.OutlinedButton">
 
