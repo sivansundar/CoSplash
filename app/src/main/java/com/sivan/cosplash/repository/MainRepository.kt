@@ -2,12 +2,10 @@ package com.sivan.cosplash.repository
 
 import androidx.lifecycle.LiveData
 import androidx.paging.*
+import com.sivan.cosplash.datastore.data.FilterOptions
 import com.sivan.cosplash.network.CoSplashInterface
 import com.sivan.cosplash.network.entity.UnsplashPhotoEntity
 import com.sivan.cosplash.paging.CoSplashPagingSource
-import okio.IOException
-import retrofit2.HttpException
-import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -28,12 +26,12 @@ class MainRepository @Inject constructor(private val coSplashInterface: CoSplash
                 enablePlaceholders = false
             ),
             pagingSourceFactory = { CoSplashPagingSource(coSplashInterface, null, TYPE_COLLECTION) }
-        ).liveData
+        ).flow
 
 
-     fun searchPhotos(query : String) =
+     fun searchPhotos(query: FilterOptions): LiveData<PagingData<UnsplashPhotoEntity>> {
 
-       Pager(
+        return Pager(
              config = PagingConfig(
                  pageSize = 20,
                  maxSize = 100,
@@ -41,6 +39,9 @@ class MainRepository @Inject constructor(private val coSplashInterface: CoSplash
              ),
              pagingSourceFactory = { CoSplashPagingSource(coSplashInterface, query, TYPE_SEARCH) }
          ).liveData
+
+     }
+
 
 
 }

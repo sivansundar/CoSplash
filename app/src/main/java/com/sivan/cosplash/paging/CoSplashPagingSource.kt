@@ -2,9 +2,11 @@ package com.sivan.cosplash.paging
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
+import com.sivan.cosplash.datastore.data.FilterOptions
 import com.sivan.cosplash.network.CoSplashInterface
 import com.sivan.cosplash.network.entity.UnsplashPhotoEntity
 import com.sivan.cosplash.repository.TYPE_SEARCH
+import com.sivan.cosplash.util.filterNotNullValues
 import okio.IOException
 import retrofit2.HttpException
 import timber.log.Timber
@@ -15,14 +17,14 @@ private const val DEFAULT_COLLECTION = 2423569
 
 class CoSplashPagingSource(
     private val coSplashInterface: CoSplashInterface,
-    private val query: String?,
-    private val type : Int
+    private val query: FilterOptions?,
+    private val type: Int
 ) : PagingSource<Int, UnsplashPhotoEntity>() {
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, UnsplashPhotoEntity> {
         val position = params.key ?: DEFAULT_PAGE_INDEX
 
-       return if (type == TYPE_SEARCH) loadSearchElements(query.toString(), position, params.loadSize) else loadCollectionElements(position, params.loadSize)
+       return if (type == TYPE_SEARCH) loadSearchElements(query, position, params.loadSize) else loadCollectionElements(position, params.loadSize)
 
     }
 
@@ -47,9 +49,24 @@ class CoSplashPagingSource(
 
 
 
-    private suspend fun loadSearchElements(queryString: String, position: Int, loadSize: Int): LoadResult<Int, UnsplashPhotoEntity> {
+    private suspend fun loadSearchElements(filterOptions: FilterOptions?, position: Int, loadSize: Int): LoadResult<Int, UnsplashPhotoEntity> {
         return try {
-            val response = coSplashInterface.search(queryString, position, loadSize)
+
+            Timber.d("Options : $filterOptions")
+
+
+            val options = hashMapOf<String, String?>()
+            options["query"] = filterOptions?.query
+            options["orientation"] = if (filterOptions?.orientation.isNullOrEmpty()) null else filterOptions?.orientation
+            options["content_filter"] = if (filterOptions?.content_filter.isNullOrEmpty()) null else filterOptions?.content_filter
+            options["color"] = if (filterOptions?.color.isNullOrEmpty()) null else filterOptions?.color
+            options["sort_by"] = if (filterOptions?.sort_by.isNullOrEmpty()) null else filterOptions?.sort_by
+
+            val filteredQueryMap = options.filterNotNullValues()
+
+            Timber.d("Options after filter : $filteredQueryMap")
+
+            val response = coSplashInterface.search(filteredQueryMap, position, loadSize, null)
             val result = response.results
             Timber.d("TYPE : ${type}")
 

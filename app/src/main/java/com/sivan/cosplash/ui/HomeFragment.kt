@@ -9,6 +9,7 @@ import android.view.inputmethod.EditorInfo
 import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.paging.LoadState
 import androidx.recyclerview.widget.GridLayoutManager
@@ -21,6 +22,9 @@ import com.sivan.cosplash.paging.PagingLoadStateAdapter
 import com.sivan.cosplash.util.OnItemClick
 import com.sivan.cosplash.viewmodel.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 import timber.log.Timber
 
 // TODO: Rename parameter arguments, choose names that match
@@ -55,6 +59,7 @@ class HomeFragment : Fragment(), OnItemClick {
         }
     }
 
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -70,14 +75,11 @@ class HomeFragment : Fragment(), OnItemClick {
     }
 
     private fun getCollection() {
-        mainViewModel.fetchDefaultCollection().observe(viewLifecycleOwner, {
-            adapter.submitData(viewLifecycleOwner.lifecycle, it)
-        })
-
-//          mainViewModel.imageSearchResult.observe(viewLifecycleOwner, {
-//            adapter.submitData(viewLifecycleOwner.lifecycle, it)
-//        })
-
+       lifecycleScope.launch(Dispatchers.Main) {
+           mainViewModel.fetchDefaultCollection().collect  {
+               adapter.submitData(viewLifecycleOwner.lifecycle, it)
+           }
+       }
     }
 
     private fun bindUIComponents() {
@@ -164,11 +166,18 @@ class HomeFragment : Fragment(), OnItemClick {
     }
 
     private fun searchPhotos(searchText: String) {
-        //mainViewModel.searchImages(searchText)
+       // mainViewModel.updateQuery(searchText)
+        //updateFilterOptions()
 
         // Navigate to search fragment
         val action = HomeFragmentDirections.actionHomeFragmentToSearchFragment(searchText)
         findNavController().navigate(action)
+    }
+
+    private fun updateFilterOptions() {
+        lifecycleScope.launch(Dispatchers.Main) {
+        //    mainViewModel.updateFilterOptions(it)
+        }
     }
 
     companion object {
