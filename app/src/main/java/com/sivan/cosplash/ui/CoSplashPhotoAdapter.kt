@@ -1,19 +1,19 @@
-package com.sivan.cosplash
+package com.sivan.cosplash.ui
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.annotation.NonNull
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import coil.Coil
 import coil.load
-import coil.size.Scale
+import com.sivan.cosplash.R
 import com.sivan.cosplash.databinding.PhotoItemBinding
 import com.sivan.cosplash.network.entity.UnsplashPhotoEntity
 import com.sivan.cosplash.util.OnItemClick
 
-class CoSplashPhotoAdapter(private val listener : OnItemClick) : PagingDataAdapter<UnsplashPhotoEntity, CoSplashPhotoAdapter.PhotoViewHolder>(PHOTO_COMPARATOR) {
+class CoSplashPhotoAdapter(private val listener : OnItemClick) : PagingDataAdapter<UnsplashPhotoEntity, CoSplashPhotoAdapter.PhotoViewHolder>(
+    PHOTO_COMPARATOR
+) {
 
 
     override fun onBindViewHolder(holder: PhotoViewHolder, position: Int) {

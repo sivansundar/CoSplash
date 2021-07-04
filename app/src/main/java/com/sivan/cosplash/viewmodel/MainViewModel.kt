@@ -3,9 +3,8 @@ package com.sivan.cosplash.viewmodel
 import androidx.lifecycle.*
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
-import com.sivan.cosplash.datastore.data.FilterOptions
+import com.sivan.cosplash.data.FilterOptions
 import com.sivan.cosplash.network.entity.UnsplashPhotoEntity
-import com.sivan.cosplash.repository.DataStoreRepository
 import com.sivan.cosplash.repository.MainRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
@@ -16,84 +15,111 @@ import javax.inject.Inject
 @HiltViewModel
 class MainViewModel @Inject constructor(
     private val repository: MainRepository,
-    private val dataStoreRepository: DataStoreRepository
-    ) : ViewModel() {
+) : ViewModel() {
 
-    private val currentQuery = MutableLiveData(DEFAULT_SEARCH_TERM)
-//    val imageSearchResult = currentQuery.switchMap { query ->
-//            fetchSearchResults(query)
-//        }
-//
-//    //live data use case
-//    fun fetchSearchResults(query: String): LiveData<PagingData<UnsplashPhotoEntity>> {
-//
-//        return repository.searchPhotos(query)
-//            .cachedIn(viewModelScope)
-//    }
-
-    fun fetchDefaultCollection() : Flow<PagingData<UnsplashPhotoEntity>> {
-        return repository.getDefaultCollection().cachedIn(viewModelScope)
-    }
+    /**
+     * @param currentFilter
+     * @param searchOptions
+     * We update the currentFilter object to initiate a query. Whenever this value is changed, we execute the searchPhotos(filterOptions) function from our repository class
+     * which is responsible for initiating a GET request and returns a PagingData object.
+     *
+     * We observe changes on the searchOptions variable in our fragment and update the adapter data accordingly.
+     *
+     * */
 
     private val currentFilter = MutableLiveData<FilterOptions>()
     val searchOptions = currentFilter.switchMap {
-        Timber.d("Filter options changed : ${it}")
-
+        Timber.d("Filter options : ${it}")
         repository.searchPhotos(it).cachedIn(viewModelScope)
     }
 
-    suspend fun updateFilterOptions(filterOptions: FilterOptions) {
+    fun updateFilterOptions(filterOptions: FilterOptions) {
+        viewModelScope.launch {
+            currentFilter.value = filterOptions
+            Timber.d("Filter options VM : ${currentFilter.value}")
+        }
 
-        currentFilter.value = filterOptions
-        Timber.d("Filter options VM : ${currentFilter.value}")
     }
 
+    fun updateFilter() {
+        viewModelScope.launch {
+            val item = FilterOptions(
+                query = query.value,
+                sort_by = sort_by.value,
+                color = color.value,
+                content_filter = content_filter.value,
+                orientation = orientation.value
+            )
+            currentFilter.value = item
+        }
+    }
 
+    /**
+     * Responsible for loading the default star wars collection. Static data for search term
+     **/
+
+    fun fetchDefaultCollection(): Flow<PagingData<UnsplashPhotoEntity>> {
+        return repository.getDefaultCollection().cachedIn(viewModelScope)
+    }
 
     private val loadStateTextMLD = MutableLiveData<String>()
-    val loadStateText : LiveData<String> = loadStateTextMLD
+    val loadStateText: LiveData<String> = loadStateTextMLD
 
-    fun setLoadStateText(text : String) {
+    fun setLoadStateText(text: String) {
         loadStateTextMLD.value = text
     }
 
-    val preferenceFlow = dataStoreRepository.preferencesFlow
-
-    fun updateQuery(text : String) {
-        currentQuery.value = text
+    private val query = MutableLiveData<String>()
+    val _query: LiveData<String> = query
+    fun updateQuery(text: String) {
         viewModelScope.launch {
-            dataStoreRepository.updateQuery(text)
+            query.value = text
         }
     }
 
-    fun updateSortBy(text : String) {
+    private val sort_by = MutableLiveData<String>()
+    fun updateSortBy(text: String) {
         viewModelScope.launch {
-            dataStoreRepository.updateSortBy(text)
+            sort_by.value = text
         }
     }
 
-    fun updateColor(text : String) {
+    private val color = MutableLiveData<String>()
+    fun updateColor(text: String) {
         viewModelScope.launch {
-            dataStoreRepository.updateColor(text)
+            color.value = text
         }
     }
 
-    fun updateOrientation(text : String) {
+    private val orientation = MutableLiveData<String>()
+    fun updateOrientation(text: String) {
         viewModelScope.launch {
-            dataStoreRepository.updateOrientation(text)
+            orientation.value = text
         }
     }
 
-    fun updateContentFilter(text : String) {
+    private val content_filter = MutableLiveData<String>()
+    fun updateContentFilter(text: String) {
         viewModelScope.launch {
-            dataStoreRepository.updateContentFilter(text)
+            content_filter.value = text
         }
+    }
+
+
+    fun clearFilterOptions() {
+        updateContentFilter("")
+        updateOrientation("")
+        updateSortBy("")
+        updateColor("")
     }
 
 
     companion object {
+        /**
+         * @param DEFAULT_COLLECTION_ID points to the default "Star Wars" collection
+         */
         private const val DEFAULT_COLLECTION_ID = 2423569
-        private const val DEFAULT_SEARCH_TERM = "cats"
 
     }
-    }
+
+}

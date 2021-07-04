@@ -1,28 +1,27 @@
 package com.sivan.cosplash.ui
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.widget.Toast
 import androidx.core.view.isVisible
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.Fragment
+import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.paging.LoadState
 import androidx.recyclerview.widget.GridLayoutManager
 import com.google.android.material.textfield.TextInputEditText
-import com.sivan.cosplash.CoSplashPhotoAdapter
+import com.sivan.cosplash.R
 import com.sivan.cosplash.databinding.FragmentHomeBinding
-import com.sivan.cosplash.util.hideKeyboard
 import com.sivan.cosplash.network.entity.UnsplashPhotoEntity
 import com.sivan.cosplash.paging.PagingLoadStateAdapter
 import com.sivan.cosplash.util.OnItemClick
+import com.sivan.cosplash.util.hideKeyboard
 import com.sivan.cosplash.viewmodel.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -45,11 +44,11 @@ class HomeFragment : Fragment(), OnItemClick {
 
     lateinit var binding: FragmentHomeBinding
 
-    lateinit var searchBoxTextInput : TextInputEditText
+    lateinit var searchBoxTextInput: TextInputEditText
 
     lateinit var adapter: CoSplashPhotoAdapter
 
-    private val mainViewModel by viewModels<MainViewModel>()
+    private val mainViewModel: MainViewModel by hiltNavGraphViewModels(R.id.nav_graph)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -69,17 +68,24 @@ class HomeFragment : Fragment(), OnItemClick {
 
         bindUIComponents()
 
-        //getCollection()
+        lifecycleScope.launch {
+            mainViewModel.clearFilterOptions()
+        }
+
+        getCollection()
 
         return binding.root
     }
 
     private fun getCollection() {
-       lifecycleScope.launch(Dispatchers.Main) {
-           mainViewModel.fetchDefaultCollection().collect  {
-               adapter.submitData(viewLifecycleOwner.lifecycle, it)
-           }
-       }
+        /**
+         * Initiates a request to get the default star wars collection. The data recieved is then sent to the CoSplashPhotoAdapter
+         * */
+        viewLifecycleOwner.lifecycleScope.launch {
+            mainViewModel.fetchDefaultCollection().collect {
+                adapter.submitData(viewLifecycleOwner.lifecycle, it)
+            }
+        }
     }
 
     private fun bindUIComponents() {
@@ -112,21 +118,21 @@ class HomeFragment : Fragment(), OnItemClick {
                 override fun getSpanSize(position: Int): Int {
                     return if (position == 0 && headerAdapter.itemCount > 0) {
                         2
-                        /*
-                            If we are at first position and header exists,
-                            set span size to 2 so that the entire width is taken
-                            */
+                        /**
+                        If we are at first position and header exists,
+                        set span size to 2 so that the entire width is taken
+                         **/
 
                     } else if (position == concatAdapter.itemCount - 1 && footerAdapter.itemCount > 0) {
                         2
-                        /*
-                        At last position and footer exists,
+
+                        /**
+                        If we are last position and footer exists,
                         set span size to 2 so that the entire width is taken
-                        */
+                         **/
 
                     } else {
                         1
-                        // If we are not at the top or bottom positions in the list, then set span size to 1
 
                     }
                 }
@@ -140,7 +146,8 @@ class HomeFragment : Fragment(), OnItemClick {
                 progressCircular.isVisible = combinedLoadStates.source.refresh is LoadState.Loading
                 recyclerView.isVisible = combinedLoadStates.source.refresh is LoadState.NotLoading
                 retryButton.isVisible = combinedLoadStates.source.refresh is LoadState.Error
-                loadStateCollectionText.isVisible = combinedLoadStates.source.refresh is LoadState.Error
+                loadStateCollectionText.isVisible =
+                    combinedLoadStates.source.refresh is LoadState.Error
             }
 
         }
@@ -151,14 +158,9 @@ class HomeFragment : Fragment(), OnItemClick {
     }
 
     private fun setupSearchBox() {
-        searchBoxTextInput.setOnEditorActionListener { v, actionId, event ->
+        searchBoxTextInput.setOnEditorActionListener { v, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                Toast.makeText(context, "Clicked", Toast.LENGTH_SHORT).show()
-                Timber.d("Clicked")
-                // Handle Search function. Change switchmap value
-
                 searchPhotos(v.text.toString())
-
                 hideKeyboard()
             }
             true
@@ -166,18 +168,21 @@ class HomeFragment : Fragment(), OnItemClick {
     }
 
     private fun searchPhotos(searchText: String) {
-       // mainViewModel.updateQuery(searchText)
-        //updateFilterOptions()
+        updateFilterOptions(searchText)
 
-        // Navigate to search fragment
-        val action = HomeFragmentDirections.actionHomeFragmentToSearchFragment(searchText)
+        navigateToSearchFragment()
+    }
+
+    private fun navigateToSearchFragment() {
+        // Navigate to the search fragment
+        val action = HomeFragmentDirections.actionHomeFragmentToSearchFragment()
         findNavController().navigate(action)
     }
 
-    private fun updateFilterOptions() {
-        lifecycleScope.launch(Dispatchers.Main) {
-        //    mainViewModel.updateFilterOptions(it)
-        }
+    private fun updateFilterOptions(searchText: String) {
+        mainViewModel.updateQuery(searchText)
+        mainViewModel.updateFilter()
+
     }
 
     companion object {

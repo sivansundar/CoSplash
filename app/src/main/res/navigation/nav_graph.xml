@@ -44,20 +44,17 @@
         android:id="@+id/searchFragment"
         android:name="com.sivan.cosplash.ui.SearchFragment"
         android:label="fragment_search"
-        tools:layout="@layout/fragment_search" >
-        <argument
-            android:name="search_term"
-            app:argType="string" />
+        tools:layout="@layout/fragment_search">
         <action
             android:id="@+id/action_searchFragment_to_detailsFragment"
             app:destination="@id/detailsFragment"
             app:enterAnim="@anim/nav_default_enter_anim"
-            app:exitAnim="@anim/nav_default_pop_exit_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:launchSingleTop="true"
             app:popEnterAnim="@anim/nav_default_pop_enter_anim"
             app:popExitAnim="@anim/nav_default_pop_exit_anim"
+            app:popUpTo="@id/searchFragment"
             app:popUpToSaveState="true"
-            app:popUpToInclusive="true"
-            app:restoreState="true"
-            app:launchSingleTop="true"/>
+            app:restoreState="true" />
     </fragment>
 </navigation>

@@ -2,7 +2,7 @@ package com.sivan.cosplash.paging
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
-import com.sivan.cosplash.datastore.data.FilterOptions
+import com.sivan.cosplash.data.FilterOptions
 import com.sivan.cosplash.network.CoSplashInterface
 import com.sivan.cosplash.network.entity.UnsplashPhotoEntity
 import com.sivan.cosplash.repository.TYPE_SEARCH
@@ -32,8 +32,6 @@ class CoSplashPagingSource(
         return try {
             val response = coSplashInterface.getCollectionById(DEFAULT_COLLECTION, position, loadSize)
 
-            Timber.d("TYPE : ${type}")
-
             LoadResult.Page(
                 data = response,
                 prevKey = computePreviousKey(position),
@@ -52,9 +50,6 @@ class CoSplashPagingSource(
     private suspend fun loadSearchElements(filterOptions: FilterOptions?, position: Int, loadSize: Int): LoadResult<Int, UnsplashPhotoEntity> {
         return try {
 
-            Timber.d("Options : $filterOptions")
-
-
             val options = hashMapOf<String, String?>()
             options["query"] = filterOptions?.query
             options["orientation"] = if (filterOptions?.orientation.isNullOrEmpty()) null else filterOptions?.orientation
@@ -63,7 +58,6 @@ class CoSplashPagingSource(
             options["sort_by"] = if (filterOptions?.sort_by.isNullOrEmpty()) null else filterOptions?.sort_by
 
             val filteredQueryMap = options.filterNotNullValues()
-
             Timber.d("Options after filter : $filteredQueryMap")
 
             val response = coSplashInterface.search(filteredQueryMap, position, loadSize, null)

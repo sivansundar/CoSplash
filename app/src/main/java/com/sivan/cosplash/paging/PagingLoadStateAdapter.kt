@@ -55,11 +55,6 @@ class PagingLoadStateAdapter(private val retry : () -> Unit) : LoadStateAdapter<
                     }
                 }
             }
-
-//            binding.apply {
-//                progressCircular.isVisible = loadState is LoadState.Loading
-//                retryButton.isVisible = loadState is LoadState.NotLoading || loadState is LoadState.Error
-//            }
         }
     }
 }

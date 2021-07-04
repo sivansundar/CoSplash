@@ -2,7 +2,7 @@ package com.sivan.cosplash.repository
 
 import androidx.lifecycle.LiveData
 import androidx.paging.*
-import com.sivan.cosplash.datastore.data.FilterOptions
+import com.sivan.cosplash.data.FilterOptions
 import com.sivan.cosplash.network.CoSplashInterface
 import com.sivan.cosplash.network.entity.UnsplashPhotoEntity
 import com.sivan.cosplash.paging.CoSplashPagingSource

@@ -1,17 +1,16 @@
 package com.sivan.cosplash.ui
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
+import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.navArgs
 import coil.load
-import coil.request.ImageRequest
-import coil.request.ImageResult
 import com.sivan.cosplash.R
 import com.sivan.cosplash.databinding.FragmentDetailsBinding
+
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -50,21 +49,22 @@ class DetailsFragment : Fragment() {
         val photos = args.photos
 
         binding.apply {
-            photoView.load(photos.image_urls.full){
-                //placeholder(R.drawable.ic_baseline_photo_72)
+
+            photoView.load(photos.image_urls.raw) {
                 listener(
-                    onSuccess = {request, metadata ->
-                        binding.progressCircular.visibility = View.GONE
+                    onSuccess = { request, metadata ->
+                        changeProgressIndicatorVisibility(false)
                     },
-                    onError = {request, throwable ->
-                        binding.progressCircular.visibility = View.GONE
+                    onError = { request, throwable ->
+                        changeProgressIndicatorVisibility(false)
                     },
-                    onCancel = {request ->
-                        binding.progressCircular.visibility = View.GONE
+                    onCancel = { request ->
+                        changeProgressIndicatorVisibility(false)
                     },
-                    onStart = {request ->
-                        binding.progressCircular.visibility = View.VISIBLE
+                    onStart = { request ->
+                        changeProgressIndicatorVisibility(true)
                     }
+
                 )
                 error(R.drawable.ic_baseline_error_outline_72)
             }
@@ -72,6 +72,11 @@ class DetailsFragment : Fragment() {
 
         return binding.root
     }
+
+    private fun changeProgressIndicatorVisibility(state: Boolean) {
+        binding.progressCircular.isVisible = state
+    }
+
 
     companion object {
         /**
