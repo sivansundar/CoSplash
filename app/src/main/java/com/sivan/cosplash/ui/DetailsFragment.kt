@@ -50,7 +50,7 @@ class DetailsFragment : Fragment() {
 
         binding.apply {
 
-            photoView.load(photos.image_urls.raw) {
+            photoView.load(photos.image_urls.full) {
                 listener(
                     onSuccess = { request, metadata ->
                         changeProgressIndicatorVisibility(false)
