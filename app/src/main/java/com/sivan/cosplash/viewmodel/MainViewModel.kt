@@ -6,6 +6,7 @@ import androidx.paging.cachedIn
 import com.sivan.cosplash.data.FilterOptions
 import com.sivan.cosplash.network.entity.UnsplashPhotoEntity
 import com.sivan.cosplash.repository.MainRepository
+import com.sivan.cosplash.room.entity.FavouriteCacheEntity
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -26,6 +27,29 @@ class MainViewModel @Inject constructor(
      * We observe changes on the searchOptions variable in our fragment and update the adapter data accordingly.
      *
      * */
+
+    private val _selectionState = MutableLiveData<Boolean>(false) // Holds an initial state of false
+    val selectionState : LiveData<Boolean> = _selectionState
+
+    suspend fun getFavItem(id : String) {
+        setSelectionState(repository.checkIfItemExists(id))
+    }
+
+    suspend fun addFavouriteItem(item : UnsplashPhotoEntity) {
+        repository.insertFavouriteItem(item)
+        setSelectionState(true)
+    }
+
+    suspend fun removeFavouriteItem(id : String) {
+        _selectionState.value = repository.removeFavouriteItem(id)
+        setSelectionState(false)
+
+    }
+
+    private fun setSelectionState(state : Boolean) {
+        Timber.d("Selection state from VM : ${state}")
+        _selectionState.value = state
+    }
 
     private val currentFilter = MutableLiveData<FilterOptions>()
     val searchOptions = currentFilter.switchMap {

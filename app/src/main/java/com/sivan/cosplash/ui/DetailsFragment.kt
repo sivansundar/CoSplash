@@ -4,12 +4,22 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
 import coil.load
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.sivan.cosplash.R
 import com.sivan.cosplash.databinding.FragmentDetailsBinding
+import com.sivan.cosplash.network.entity.UnsplashPhotoEntity
+import com.sivan.cosplash.viewmodel.MainViewModel
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import timber.log.Timber
 
 
 // TODO: Rename parameter arguments, choose names that match
@@ -22,6 +32,8 @@ private const val ARG_PARAM2 = "param2"
  * Use the [DetailsFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
+
+@AndroidEntryPoint
 class DetailsFragment : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
@@ -30,6 +42,9 @@ class DetailsFragment : Fragment() {
     lateinit var binding: FragmentDetailsBinding
 
     private val args by navArgs<DetailsFragmentArgs>()
+
+    private val mainViewModel: MainViewModel by hiltNavGraphViewModels(R.id.nav_graph)
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,6 +62,9 @@ class DetailsFragment : Fragment() {
         binding = FragmentDetailsBinding.inflate(layoutInflater)
 
         val photos = args.photos
+
+        // Get initial selection state.
+        getFavItemFromVM(photos)
 
         binding.apply {
 
@@ -69,8 +87,44 @@ class DetailsFragment : Fragment() {
                 error(R.drawable.ic_baseline_error_outline_72)
             }
         }
-
         return binding.root
+    }
+
+    private fun addToFav(photos: UnsplashPhotoEntity) {
+        lifecycleScope.launch(Dispatchers.Main) {
+            mainViewModel.addFavouriteItem(item = photos)
+        }
+    }
+
+    private fun getFavItemFromVM(photos: UnsplashPhotoEntity) {
+        lifecycleScope.launch {
+            mainViewModel.getFavItem(photos.id)
+
+            mainViewModel.selectionState.observe(viewLifecycleOwner, {
+                Timber.d("Checked state : ${it}")
+                binding.checkBox.isChecked = it
+            })
+        }
+
+        binding.checkBox.setOnCheckedChangeListener { buttonView, isChecked ->
+            if (buttonView.isPressed) {
+                /** Triggers only when a button is pressed. **/
+                if (isChecked) {
+                    addToFav(photos)
+                    Toast.makeText(context, "This photo was successfully added to your favourites list", Toast.LENGTH_SHORT).show()
+                } else {
+                    removeFromFav(photos.id)
+                    Toast.makeText(context, "This photo was removed from your favourites list", Toast.LENGTH_SHORT).show()
+
+                }
+            }
+        }
+    }
+
+    private fun removeFromFav(id: String) {
+        lifecycleScope.launch {
+            mainViewModel.removeFavouriteItem(id)
+        }
     }
 
     private fun changeProgressIndicatorVisibility(state: Boolean) {

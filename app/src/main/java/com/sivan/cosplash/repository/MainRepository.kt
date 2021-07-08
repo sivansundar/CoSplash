@@ -6,6 +6,11 @@ import com.sivan.cosplash.data.FilterOptions
 import com.sivan.cosplash.network.CoSplashInterface
 import com.sivan.cosplash.network.entity.UnsplashPhotoEntity
 import com.sivan.cosplash.paging.CoSplashPagingSource
+import com.sivan.cosplash.room.dao.FavouritesDao
+import com.sivan.cosplash.room.entity.FavouriteCacheEntity
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
+import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -14,9 +19,56 @@ const val TYPE_COLLECTION = 0
 const val TYPE_SEARCH = 1
 private const val DEFAULT_PAGE_INDEX = 1
 
+private const val EXISTS = -1
 
 @Singleton
-class MainRepository @Inject constructor(private val coSplashInterface: CoSplashInterface) {
+class MainRepository @Inject constructor(
+    private val coSplashInterface: CoSplashInterface,
+    private val favouritesDao: FavouritesDao) {
+
+    suspend fun removeFavouriteItem(id : String): Boolean {
+        val removeItem = favouritesDao.deleteItem(id)
+        if (removeItem>0) {
+            Timber.d("REMOVED : $removeItem")
+        } else {
+            Timber.d("REMOVED NOT : $removeItem")
+        }
+        return removeItem > 0
+    }
+
+    suspend fun insertFavouriteItem(item : UnsplashPhotoEntity): FavouriteCacheEntity {
+        val imageUrls = Json.encodeToString(item.image_urls)
+
+        val favItem = FavouriteCacheEntity(
+            id = item.id,
+            image_urls = imageUrls,
+            username = item.user.username
+        )
+
+        val itemexists = favouritesDao.exists(item.id)
+
+        if (!itemexists) {
+            /**
+             * If the photo does not exist in the database, then we perform the insert operation.
+             * If the photo exists, then we dont execute this block and it is understood that the photo exists and therefore we go ahead
+             * and get the photo based on the id.
+             * */
+            val insertItem = favouritesDao.insert(favItem)
+            Timber.d("Item status : $insertItem")
+        }
+
+        val itemFromDb = favouritesDao.getFavouriteItem(item.id)
+
+        Timber.d("Item from db : $itemFromDb")
+
+        return itemFromDb
+    }
+
+    suspend fun checkIfItemExists(id: String): Boolean {
+        val res = favouritesDao.exists(id)
+        Timber.d("IFav item : $res : $id")
+        return res
+    }
 
     fun getDefaultCollection() =
         Pager(

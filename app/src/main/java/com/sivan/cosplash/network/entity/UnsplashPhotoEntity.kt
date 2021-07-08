@@ -4,7 +4,9 @@ import android.os.Parcelable
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 import kotlinx.android.parcel.Parcelize
+import kotlinx.serialization.Serializable
 
+@Serializable
 @Parcelize
 data class UnsplashPhotoEntity(
 
@@ -14,11 +16,16 @@ data class UnsplashPhotoEntity(
 
     @SerializedName("urls")
     @Expose
-    var image_urls : ImageUrls
+    var image_urls : ImageUrls,
+
+    @SerializedName("user")
+    @Expose
+    var user: UserEntity
 
 
 ) : Parcelable {
 
+    @Serializable
     @Parcelize
     data class ImageUrls(
 
@@ -44,4 +51,6 @@ data class UnsplashPhotoEntity(
 
 
     ) : Parcelable
+
 }
+
