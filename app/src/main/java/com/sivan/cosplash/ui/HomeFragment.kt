@@ -15,9 +15,11 @@ import androidx.paging.LoadState
 import androidx.recyclerview.widget.GridLayoutManager
 import com.google.android.material.textfield.TextInputEditText
 import com.sivan.cosplash.R
+import com.sivan.cosplash.data.Photo
 import com.sivan.cosplash.databinding.FragmentHomeBinding
 import com.sivan.cosplash.network.entity.UnsplashPhotoEntity
 import com.sivan.cosplash.paging.PagingLoadStateAdapter
+import com.sivan.cosplash.room.entity.FavouriteCacheEntity
 import com.sivan.cosplash.util.OnItemClick
 import com.sivan.cosplash.util.hideKeyboard
 import com.sivan.cosplash.viewmodel.MainViewModel
@@ -205,9 +207,9 @@ class HomeFragment : Fragment(), OnItemClick {
             }
     }
 
-    override fun onItemClick(photoEntity: UnsplashPhotoEntity) {
+    override fun onItemClick(photo: Photo) {
         // Handles image clicks from the recyclerView. We can use this to navigate to another fragment
-        val action = HomeFragmentDirections.actionHomeFragmentToDetailsFragment(photoEntity)
+        val action = HomeFragmentDirections.actionHomeFragmentToDetailsFragment(photo)
         findNavController().navigate(action)
 
     }

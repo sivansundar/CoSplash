@@ -1,5 +1,7 @@
 package com.sivan.cosplash.room.dao
 
+import androidx.lifecycle.LiveData
+import androidx.paging.PagingSource
 import androidx.room.*
 import androidx.room.OnConflictStrategy.IGNORE
 import com.sivan.cosplash.room.entity.FavouriteCacheEntity
@@ -17,7 +19,7 @@ interface FavouritesDao {
     suspend fun exists(id: String): Boolean
 
     @Query("SELECT * FROM favourites")
-    suspend fun getAllFavourites() : List<FavouriteCacheEntity>
+    fun getAllFavourites() : PagingSource<Int, FavouriteCacheEntity>
 
     @Query("SELECT * from favourites WHERE id=:id")
     suspend fun getFavouriteItem(id : String) : FavouriteCacheEntity

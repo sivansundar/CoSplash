@@ -19,8 +19,10 @@ import com.google.android.material.button.MaterialButtonToggleGroup
 import com.sivan.cosplash.R
 import com.sivan.cosplash.databinding.FragmentSearchBinding
 import com.sivan.cosplash.data.FilterOptions
+import com.sivan.cosplash.data.Photo
 import com.sivan.cosplash.network.entity.UnsplashPhotoEntity
 import com.sivan.cosplash.paging.PagingLoadStateAdapter
+import com.sivan.cosplash.room.entity.FavouriteCacheEntity
 import com.sivan.cosplash.util.OnItemClick
 import com.sivan.cosplash.util.RadioGridGroup
 import com.sivan.cosplash.util.hideKeyboard
@@ -401,13 +403,14 @@ class SearchFragment : Fragment(), OnItemClick {
         }
     }
 
-    override fun onItemClick(photo: UnsplashPhotoEntity) {
+    override fun onItemClick(photo: Photo) {
         /**
          *  Implemented an interface to handle onClick events for our photos in the RecyclerView
          **/
         val action = SearchFragmentDirections.actionSearchFragmentToDetailsFragment(photo)
         findNavController().navigate(action)
     }
+
 
     companion object {
 

@@ -11,14 +11,17 @@ import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
 import coil.load
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.sivan.cosplash.R
+import com.sivan.cosplash.data.Photo
 import com.sivan.cosplash.databinding.FragmentDetailsBinding
 import com.sivan.cosplash.network.entity.UnsplashPhotoEntity
+import com.sivan.cosplash.network.entity.toEntity
+import com.sivan.cosplash.room.entity.FavouriteCacheEntity
 import com.sivan.cosplash.viewmodel.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.serialization.json.Json
 import timber.log.Timber
 
 
@@ -66,9 +69,10 @@ class DetailsFragment : Fragment() {
         // Get initial selection state.
         getFavItemFromVM(photos)
 
+        val images = Json.decodeFromString(UnsplashPhotoEntity.ImageUrls.serializer(), photos.image_urls)
         binding.apply {
 
-            photoView.load(photos.image_urls.full) {
+            photoView.load(images.full) {
                 listener(
                     onSuccess = { request, metadata ->
                         changeProgressIndicatorVisibility(false)
@@ -90,13 +94,13 @@ class DetailsFragment : Fragment() {
         return binding.root
     }
 
-    private fun addToFav(photos: UnsplashPhotoEntity) {
+    private fun addToFav(photos: FavouriteCacheEntity) {
         lifecycleScope.launch(Dispatchers.Main) {
             mainViewModel.addFavouriteItem(item = photos)
         }
     }
 
-    private fun getFavItemFromVM(photos: UnsplashPhotoEntity) {
+    private fun getFavItemFromVM(photos: Photo) {
         lifecycleScope.launch {
             mainViewModel.getFavItem(photos.id)
 
@@ -110,7 +114,7 @@ class DetailsFragment : Fragment() {
             if (buttonView.isPressed) {
                 /** Triggers only when a button is pressed. **/
                 if (isChecked) {
-                    addToFav(photos)
+                    addToFav(photos.toEntity())
                     Toast.makeText(context, "This photo was successfully added to your favourites list", Toast.LENGTH_SHORT).show()
                 } else {
                     removeFromFav(photos.id)

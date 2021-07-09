@@ -5,6 +5,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
+import com.sivan.cosplash.data.Photo
 import com.sivan.cosplash.network.entity.UnsplashPhotoEntity
 
 @Entity(tableName = "favourites")
@@ -19,4 +20,12 @@ data class FavouriteCacheEntity(
     var image_urls : String
 ) {
 
+}
+
+fun FavouriteCacheEntity.toPhoto() : Photo {
+    return Photo(
+        id = id,
+        username = username,
+        image_urls = image_urls
+    )
 }

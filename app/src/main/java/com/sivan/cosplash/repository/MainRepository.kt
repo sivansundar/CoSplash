@@ -8,6 +8,7 @@ import com.sivan.cosplash.network.entity.UnsplashPhotoEntity
 import com.sivan.cosplash.paging.CoSplashPagingSource
 import com.sivan.cosplash.room.dao.FavouritesDao
 import com.sivan.cosplash.room.entity.FavouriteCacheEntity
+import kotlinx.coroutines.flow.Flow
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import timber.log.Timber
@@ -26,6 +27,11 @@ class MainRepository @Inject constructor(
     private val coSplashInterface: CoSplashInterface,
     private val favouritesDao: FavouritesDao) {
 
+
+//    suspend fun getFavourites(): LiveData<List<FavouriteCacheEntity>> {
+//        return favouritesDao.getAllFavourites()
+//    }
+
     suspend fun removeFavouriteItem(id : String): Boolean {
         val removeItem = favouritesDao.deleteItem(id)
         if (removeItem>0) {
@@ -36,14 +42,8 @@ class MainRepository @Inject constructor(
         return removeItem > 0
     }
 
-    suspend fun insertFavouriteItem(item : UnsplashPhotoEntity): FavouriteCacheEntity {
+    suspend fun insertFavouriteItem(item: FavouriteCacheEntity): FavouriteCacheEntity {
         val imageUrls = Json.encodeToString(item.image_urls)
-
-        val favItem = FavouriteCacheEntity(
-            id = item.id,
-            image_urls = imageUrls,
-            username = item.user.username
-        )
 
         val itemexists = favouritesDao.exists(item.id)
 
@@ -53,7 +53,7 @@ class MainRepository @Inject constructor(
              * If the photo exists, then we dont execute this block and it is understood that the photo exists and therefore we go ahead
              * and get the photo based on the id.
              * */
-            val insertItem = favouritesDao.insert(favItem)
+            val insertItem = favouritesDao.insert(item)
             Timber.d("Item status : $insertItem")
         }
 
@@ -62,6 +62,16 @@ class MainRepository @Inject constructor(
         Timber.d("Item from db : $itemFromDb")
 
         return itemFromDb
+    }
+
+    suspend fun getPagedFavList(): Flow<PagingData<FavouriteCacheEntity>> {
+        return Pager(
+            PagingConfig(
+                pageSize = 10,
+                enablePlaceholders = false,
+                maxSize = 100)) {
+            favouritesDao.getAllFavourites() }
+            .flow
     }
 
     suspend fun checkIfItemExists(id: String): Boolean {

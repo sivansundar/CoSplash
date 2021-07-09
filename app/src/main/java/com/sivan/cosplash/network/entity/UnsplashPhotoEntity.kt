@@ -3,11 +3,14 @@ package com.sivan.cosplash.network.entity
 import android.os.Parcelable
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
+import com.sivan.cosplash.data.Photo
+import com.sivan.cosplash.room.entity.FavouriteCacheEntity
 import kotlinx.android.parcel.Parcelize
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 
 @Serializable
-@Parcelize
 data class UnsplashPhotoEntity(
 
     @SerializedName("id")
@@ -23,10 +26,9 @@ data class UnsplashPhotoEntity(
     var user: UserEntity
 
 
-) : Parcelable {
+) {
 
     @Serializable
-    @Parcelize
     data class ImageUrls(
 
         @SerializedName("raw")
@@ -50,7 +52,22 @@ data class UnsplashPhotoEntity(
         var thumb : String,
 
 
-    ) : Parcelable
+    )
 
 }
 
+fun Photo.toEntity(): FavouriteCacheEntity {
+    return FavouriteCacheEntity(
+        id = this.id,
+        username = this.username,
+        image_urls = this.image_urls
+    )
+}
+
+fun UnsplashPhotoEntity.toPhoto(): Photo {
+    return Photo(
+        id = this.id,
+        username = this.user.username,
+        image_urls = Json.encodeToString(this.image_urls)
+    )
+}

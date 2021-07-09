@@ -35,7 +35,11 @@ class MainViewModel @Inject constructor(
         setSelectionState(repository.checkIfItemExists(id))
     }
 
-    suspend fun addFavouriteItem(item : UnsplashPhotoEntity) {
+    suspend fun getFavouritesList(): Flow<PagingData<FavouriteCacheEntity>> {
+        return repository.getPagedFavList().cachedIn(viewModelScope)
+    }
+
+    suspend fun addFavouriteItem(item: FavouriteCacheEntity) {
         repository.insertFavouriteItem(item)
         setSelectionState(true)
     }
