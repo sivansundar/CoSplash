@@ -11,7 +11,8 @@
 
 * <a href="https://developer.android.com/jetpack/guide" target="_blank">MVVM</a> Architecture 
 * <a href="https://developer.android.com/kotlin/coroutines" target="_blank">Corutines</a> first approach
-* <a href="https://developer.android.com/training/dependency-injection/hilt-androidHILT" target="_blank">Hilt</a> for dependency injection
+* <a href="https://developer.android.com/training/dependency-injection/hilt-android" target="_blank">Hilt</a> for dependency injection
+* <a href="https://developer.android.com/guide/navigation" target="_blank">Navigation</a>
 * <a href="https://github.com/square/retrofit" target="_blank">Retrofit</a> for network calls
 * <a href="https://github.com/coil-kt/coil" target="_blank">Coil</a> for loading images
 * <a href="https://developer.android.com/topic/libraries/architecture/paging/v3-overview" target="_blank">Paging 3</a>
@@ -34,7 +35,6 @@
 
 ## Author
 
-* Website: https://www.twitter.com/sivansundar
 * Twitter: [@sivansundar](https://twitter.com/sivansundar)
 * Github: [@sivansundar](https://github.com/sivansundar)
 * LinkedIn: [@Sivan Chakravarthy S](https://linkedin.com/in/Sivan-Chakravarthy-S)
