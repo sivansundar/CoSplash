@@ -90,6 +90,11 @@ class MainViewModel @Inject constructor(
         return repository.getDefaultCollection().cachedIn(viewModelScope)
     }
 
+    fun fetchDefaultCollectionV2(): Flow<PagingData<UnsplashPhotoEntity>> {
+        return repository.getDefaultCollection().cachedIn(viewModelScope)
+    }
+
+
     private val loadStateTextMLD = MutableLiveData<String>()
     val loadStateText: LiveData<String> = loadStateTextMLD
 

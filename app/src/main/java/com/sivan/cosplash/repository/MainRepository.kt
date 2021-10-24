@@ -89,11 +89,11 @@ class MainRepository @Inject constructor(
                 maxSize = 100,
                 enablePlaceholders = false
             ),
-            pagingSourceFactory = { SplashPagingSourceV2(coSplashInterface, null, TYPE_COLLECTION) }
+            pagingSourceFactory = { CoSplashPagingSource(coSplashInterface, null, TYPE_COLLECTION) }
         ).flow
 
 
-     fun searchPhotos(query: FilterOptions): Flow<PagingData<UnsplashPhotoEntity>> {
+     fun searchPhotos(query: FilterOptions): LiveData<PagingData<UnsplashPhotoEntity>> {
 
         return Pager(
              config = PagingConfig(
@@ -101,8 +101,8 @@ class MainRepository @Inject constructor(
                  maxSize = 100,
                  enablePlaceholders = false
              ),
-             pagingSourceFactory = { SplashPagingSourceV2(coSplashInterface, query, TYPE_SEARCH) }
-         ).flow
+             pagingSourceFactory = { CoSplashPagingSource(coSplashInterface, query, TYPE_SEARCH) }
+         ).liveData
 
      }
 

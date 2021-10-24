@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.lifecycle.lifecycleScope
@@ -26,11 +27,14 @@ import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.items
 import androidx.paging.compose.itemsIndexed
+import androidx.recyclerview.widget.GridLayoutManager
 import coil.compose.rememberImagePainter
 import com.google.android.material.textfield.TextInputEditText
 import com.sivan.cosplash.R
 import com.sivan.cosplash.data.Photo
 import com.sivan.cosplash.databinding.FragmentHomeBinding
+import com.sivan.cosplash.paging.CoSplashPhotoAdapter
+import com.sivan.cosplash.paging.PagingLoadStateAdapter
 import com.sivan.cosplash.util.OnItemClick
 import com.sivan.cosplash.util.hideKeyboard
 import com.sivan.cosplash.viewmodel.MainViewModel
@@ -61,6 +65,8 @@ class HomeFragment : Fragment(), OnItemClick {
 
     private val mainViewModel: MainViewModel by hiltNavGraphViewModels(R.id.nav_graph)
 
+    lateinit var adapter : CoSplashPhotoAdapter
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -83,7 +89,7 @@ class HomeFragment : Fragment(), OnItemClick {
             mainViewModel.clearFilterOptions()
         }
 
-        //getCollection()
+        getCollection()
 
         val listOfImages = listOf<String>(
             "https://images.unsplash.com/photo-1634917694906-ce32fa906bfb?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=464&q=80",
@@ -100,9 +106,9 @@ class HomeFragment : Fragment(), OnItemClick {
                       modifier = Modifier.fillMaxWidth())
         }
 
-        binding.resultContent.setContent {
-            ResultContent(list = listOfImages)
-        }
+//        binding.resultContent.setContent {
+//            ResultContent(list = listOfImages)
+//        }
 
         return binding.root
     }
@@ -133,7 +139,7 @@ class HomeFragment : Fragment(), OnItemClick {
     @OptIn(ExperimentalFoundationApi::class)
     @Composable
     fun ResultContent(list : List<String>){
-        val pagedResult = mainViewModel.fetchDefaultCollection().collectAsLazyPagingItems()
+        val pagedResult = mainViewModel.fetchDefaultCollectionV2().collectAsLazyPagingItems()
         pagedResult.apply {
             when{
                 loadState.refresh is LoadState.Loading -> {
@@ -178,6 +184,7 @@ class HomeFragment : Fragment(), OnItemClick {
          * */
         viewLifecycleOwner.lifecycleScope.launch {
             mainViewModel.fetchDefaultCollection().collect {
+                adapter.submitData(viewLifecycleOwner.lifecycle, it)
             }
 
         }
@@ -188,69 +195,69 @@ class HomeFragment : Fragment(), OnItemClick {
 
         setupSearchBox()
 
-        //setupRecyclerView()
+        setupRecyclerView()
 
     }
 
-//    private fun setupRecyclerView() {
-//        adapter = CoSplashPhotoAdapter(this)
-//
-//        val headerAdapter = PagingLoadStateAdapter { adapter.retry() }
-//        val footerAdapter = PagingLoadStateAdapter { adapter.retry() }
-//
-//        val concatAdapter = adapter.withLoadStateHeaderAndFooter(
-//            header = headerAdapter,
-//            footer = footerAdapter
-//        )
-//
-//        val gridLayoutManager = GridLayoutManager(context, 2)
-//
-//        binding.apply {
-//            recyclerView.adapter = concatAdapter
-//            recyclerView.layoutManager = gridLayoutManager
-//
-//            gridLayoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
-//                override fun getSpanSize(position: Int): Int {
-//                    return if (position == 0 && headerAdapter.itemCount > 0) {
-//                        2
-//                        /**
-//                        If we are at first position and header exists,
-//                        set span size to 2 so that the entire width is taken
-//                         **/
-//
-//                    } else if (position == concatAdapter.itemCount - 1 && footerAdapter.itemCount > 0) {
-//                        2
-//
-//                        /**
-//                        If we are last position and footer exists,
-//                        set span size to 2 so that the entire width is taken
-//                         **/
-//
-//                    } else {
-//                        1
-//
-//                    }
-//                }
-//            }
-//
-//        }
-//
-//
-//        adapter.addLoadStateListener { combinedLoadStates ->
-//            binding.apply {
-//                progressCircular.isVisible = combinedLoadStates.source.refresh is LoadState.Loading
-//                recyclerView.isVisible = combinedLoadStates.source.refresh is LoadState.NotLoading
-//                retryButton.isVisible = combinedLoadStates.source.refresh is LoadState.Error
-//                loadStateCollectionText.isVisible =
-//                    combinedLoadStates.source.refresh is LoadState.Error
-//            }
-//
-//        }
-//
-//        binding.retryButton.setOnClickListener {
-//            adapter.retry()
-//        }
-//    }
+    private fun setupRecyclerView() {
+        adapter = CoSplashPhotoAdapter(this)
+
+        val headerAdapter = PagingLoadStateAdapter { adapter.retry() }
+        val footerAdapter = PagingLoadStateAdapter { adapter.retry() }
+
+        val concatAdapter = adapter.withLoadStateHeaderAndFooter(
+            header = headerAdapter,
+            footer = footerAdapter
+        )
+
+        val gridLayoutManager = GridLayoutManager(context, 2)
+
+        binding.apply {
+            recyclerView.adapter = concatAdapter
+            recyclerView.layoutManager = gridLayoutManager
+
+            gridLayoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
+                override fun getSpanSize(position: Int): Int {
+                    return if (position == 0 && headerAdapter.itemCount > 0) {
+                        2
+                        /**
+                        If we are at first position and header exists,
+                        set span size to 2 so that the entire width is taken
+                         **/
+
+                    } else if (position == concatAdapter.itemCount - 1 && footerAdapter.itemCount > 0) {
+                        2
+
+                        /**
+                        If we are last position and footer exists,
+                        set span size to 2 so that the entire width is taken
+                         **/
+
+                    } else {
+                        1
+
+                    }
+                }
+            }
+
+        }
+
+
+        adapter.addLoadStateListener { combinedLoadStates ->
+            binding.apply {
+                progressCircular.isVisible = combinedLoadStates.source.refresh is LoadState.Loading
+                recyclerView.isVisible = combinedLoadStates.source.refresh is LoadState.NotLoading
+                retryButton.isVisible = combinedLoadStates.source.refresh is LoadState.Error
+                loadStateCollectionText.isVisible =
+                    combinedLoadStates.source.refresh is LoadState.Error
+            }
+
+        }
+
+        binding.retryButton.setOnClickListener {
+            adapter.retry()
+        }
+    }
 
     private fun setupSearchBox() {
         searchBoxTextInput.setOnEditorActionListener { v, actionId, _ ->
