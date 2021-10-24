@@ -6,23 +6,17 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.core.view.isVisible
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import androidx.paging.LoadState
 import androidx.paging.map
 import androidx.recyclerview.widget.GridLayoutManager
 import com.sivan.cosplash.R
 import com.sivan.cosplash.data.Photo
 import com.sivan.cosplash.databinding.FragmentFavouritesBinding
-import com.sivan.cosplash.network.entity.UnsplashPhotoEntity
-import com.sivan.cosplash.paging.PagingLoadStateAdapter
-import com.sivan.cosplash.room.entity.FavouriteCacheEntity
 import com.sivan.cosplash.util.OnItemClick
 import com.sivan.cosplash.viewmodel.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -46,8 +40,6 @@ class FavouritesFragment : Fragment(), OnItemClick {
     private val mainViewModel: MainViewModel by hiltNavGraphViewModels(R.id.nav_graph)
 
     lateinit var binding : FragmentFavouritesBinding
-
-    lateinit var adapter: CoSplashFavouriteAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -73,21 +65,7 @@ class FavouritesFragment : Fragment(), OnItemClick {
     }
 
     private fun setupRecyclerView() {
-        adapter = CoSplashFavouriteAdapter(this)
-
-        val headerAdapter = PagingLoadStateAdapter { adapter.retry() }
-        val footerAdapter = PagingLoadStateAdapter { adapter.retry() }
-
-        val gridLayoutManager = GridLayoutManager(context, 2)
-
-        binding.apply {
-            favouritesRV.adapter = adapter
-            favouritesRV.layoutManager = gridLayoutManager
-
-        }
-
-
-    }
+          }
 
 
 
@@ -107,18 +85,18 @@ class FavouritesFragment : Fragment(), OnItemClick {
 //        }
 
     private fun getFavouritesList() {
-        lifecycleScope.launch {
-
-            mainViewModel.getFavouritesList().collectLatest {
-                adapter.submitData(it)
-                val res = it.map { item ->
-                    item.id
-                }
-                Toast.makeText(context, "List : ${res}", Toast.LENGTH_SHORT).show()
-
-            }
-
-        }
+//        lifecycleScope.launch {
+//
+//            mainViewModel.getFavouritesList().collectLatest {
+//                adapter.submitData(it)
+//                val res = it.map { item ->
+//                    item.id
+//                }
+//                Toast.makeText(context, "List : ${res}", Toast.LENGTH_SHORT).show()
+//
+//            }
+//
+//        }
     }
 
     companion object {

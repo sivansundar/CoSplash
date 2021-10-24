@@ -7,15 +7,27 @@
     tools:context=".ui.HomeFragment">
 
 
-    <TextView
-        android:id="@+id/textView"
+<!--    <TextView-->
+<!--        android:id="@+id/title_text"-->
+<!--        style="@style/TextAppearance.AppCompat.Headline"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_marginStart="24dp"-->
+<!--        android:layout_marginTop="32dp"-->
+<!--        android:layout_marginEnd="24dp"-->
+<!--        android:text="CoSplash"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toTopOf="parent" />-->
+
+    <androidx.compose.ui.platform.ComposeView
+        android:id="@+id/title_text"
         style="@style/TextAppearance.AppCompat.Headline"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
         android:layout_marginTop="32dp"
         android:layout_marginEnd="24dp"
-        android:text="CoSplash"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -33,7 +45,7 @@
         app:endIconMode="custom"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView">
+        app:layout_constraintTop_toBottomOf="@+id/title_text">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/search_box_textInput"
@@ -70,9 +82,18 @@
         app:layout_constraintTop_toBottomOf="@+id/loadState_collection_text"
         tools:visibility="visible" />
 
+    <androidx.compose.ui.platform.ComposeView
+        android:id="@+id/result_content"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/search_box" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
+        android:visibility="gone"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginStart="24dp"

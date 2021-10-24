@@ -1,5 +1,6 @@
 package com.sivan.cosplash.paging
 
+
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.sivan.cosplash.data.FilterOptions
@@ -24,7 +25,7 @@ class CoSplashPagingSource(
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, UnsplashPhotoEntity> {
         val position = params.key ?: DEFAULT_PAGE_INDEX
 
-       return if (type == TYPE_SEARCH) loadSearchElements(query, position, params.loadSize) else loadCollectionElements(position, params.loadSize)
+        return if (type == TYPE_SEARCH) loadSearchElements(query, position, params.loadSize) else loadCollectionElements(position, params.loadSize)
 
     }
 
@@ -94,6 +95,5 @@ class CoSplashPagingSource(
 
     private fun computePreviousKey(position: Int) =
         if (position == DEFAULT_PAGE_INDEX) null else position - 1
-
 
 }

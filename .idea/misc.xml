@@ -3,6 +3,9 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="../../../../../../layout/compose-model-1634978429327.xml" value="0.33" />
+        <entry key="../../../../../../layout/compose-model-1634983608087.xml" value="0.23425925925925925" />
+        <entry key="../../../../../../layout/compose-model-1634983737153.xml" value="0.1" />
         <entry key="..\:/Android/Projects/CoSplash/app/src/main/res/drawable/color_filter_selector.xml" value="0.24375" />
         <entry key="..\:/Android/Projects/CoSplash/app/src/main/res/drawable/color_selector_drawable.xml" value="0.24375" />
         <entry key="..\:/Android/Projects/CoSplash/app/src/main/res/drawable/ic_baseline_photo_72.xml" value="0.20052083333333334" />
@@ -16,6 +19,7 @@
         <entry key="..\:/Android/Projects/CoSplash/app/src/main/res/layout/photo_item.xml" value="0.2" />
         <entry key="..\:/Android/Projects/CoSplash/app/src/main/res/menu/menu_filter_toolbar.xml" value="0.22760416666666666" />
         <entry key="..\:/Android/Projects/CoSplash/app/src/main/res/menu/menu_serach_toolbar.xml" value="0.2916666666666667" />
+        <entry key="app/src/main/res/layout/fragment_home.xml" value="0.18" />
       </map>
     </option>
   </component>

@@ -6,6 +6,8 @@ import com.sivan.cosplash.data.FilterOptions
 import com.sivan.cosplash.network.CoSplashInterface
 import com.sivan.cosplash.network.entity.UnsplashPhotoEntity
 import com.sivan.cosplash.paging.CoSplashPagingSource
+import com.sivan.cosplash.paging.SplashPagingSource
+import com.sivan.cosplash.paging.SplashPagingSourceV2
 import com.sivan.cosplash.room.dao.FavouritesDao
 import com.sivan.cosplash.room.entity.FavouriteCacheEntity
 import kotlinx.coroutines.flow.Flow
@@ -87,11 +89,11 @@ class MainRepository @Inject constructor(
                 maxSize = 100,
                 enablePlaceholders = false
             ),
-            pagingSourceFactory = { CoSplashPagingSource(coSplashInterface, null, TYPE_COLLECTION) }
+            pagingSourceFactory = { SplashPagingSourceV2(coSplashInterface, null, TYPE_COLLECTION) }
         ).flow
 
 
-     fun searchPhotos(query: FilterOptions): LiveData<PagingData<UnsplashPhotoEntity>> {
+     fun searchPhotos(query: FilterOptions): Flow<PagingData<UnsplashPhotoEntity>> {
 
         return Pager(
              config = PagingConfig(
@@ -99,8 +101,8 @@ class MainRepository @Inject constructor(
                  maxSize = 100,
                  enablePlaceholders = false
              ),
-             pagingSourceFactory = { CoSplashPagingSource(coSplashInterface, query, TYPE_SEARCH) }
-         ).liveData
+             pagingSourceFactory = { SplashPagingSourceV2(coSplashInterface, query, TYPE_SEARCH) }
+         ).flow
 
      }
 

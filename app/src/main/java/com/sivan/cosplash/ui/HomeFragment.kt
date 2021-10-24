@@ -5,21 +5,32 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
-import android.widget.Toast
-import androidx.core.view.isVisible
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.lazy.GridCells
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyVerticalGrid
+import androidx.compose.material.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.paging.LoadState
-import androidx.recyclerview.widget.GridLayoutManager
+import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.paging.compose.items
+import androidx.paging.compose.itemsIndexed
+import coil.compose.rememberImagePainter
 import com.google.android.material.textfield.TextInputEditText
 import com.sivan.cosplash.R
 import com.sivan.cosplash.data.Photo
 import com.sivan.cosplash.databinding.FragmentHomeBinding
-import com.sivan.cosplash.network.entity.UnsplashPhotoEntity
-import com.sivan.cosplash.paging.PagingLoadStateAdapter
-import com.sivan.cosplash.room.entity.FavouriteCacheEntity
 import com.sivan.cosplash.util.OnItemClick
 import com.sivan.cosplash.util.hideKeyboard
 import com.sivan.cosplash.viewmodel.MainViewModel
@@ -48,8 +59,6 @@ class HomeFragment : Fragment(), OnItemClick {
 
     lateinit var searchBoxTextInput: TextInputEditText
 
-    lateinit var adapter: CoSplashPhotoAdapter
-
     private val mainViewModel: MainViewModel by hiltNavGraphViewModels(R.id.nav_graph)
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -74,19 +83,103 @@ class HomeFragment : Fragment(), OnItemClick {
             mainViewModel.clearFilterOptions()
         }
 
-        getCollection()
+        //getCollection()
+
+        val listOfImages = listOf<String>(
+            "https://images.unsplash.com/photo-1634917694906-ce32fa906bfb?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=464&q=80",
+            "https://images.unsplash.com/photo-1634917694906-ce32fa906bfb?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=464&q=80",
+            "https://images.unsplash.com/photo-1634917694906-ce32fa906bfb?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=464&q=80",
+            "https://images.unsplash.com/photo-1634917694906-ce32fa906bfb?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=464&q=80",
+            "https://images.unsplash.com/photo-1634917694906-ce32fa906bfb?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=464&q=80",
+            "https://images.unsplash.com/photo-1634917694906-ce32fa906bfb?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=464&q=80",
+            "https://images.unsplash.com/photo-1634917694906-ce32fa906bfb?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=464&q=80"
+        )
+
+        binding.titleText.setContent {
+            TitleText(text = "CoSplash - Compose",
+                      modifier = Modifier.fillMaxWidth())
+        }
+
+        binding.resultContent.setContent {
+            ResultContent(list = listOfImages)
+        }
 
         return binding.root
     }
 
+    @Composable
+    fun TitleText(text : String, modifier: Modifier) {
+        Text(text = text)
+    }
+    
+    @Composable
+    @Preview
+    fun TitleTextPreview() {
+        TitleText(text = "CoSplash - Compose",
+                  modifier = Modifier.fillMaxWidth())
+    }
+
+    @Composable
+    @Preview
+    fun ResultContentPreview(){
+        ResultContent(list = listOf(
+            "https://images.unsplash.com/photo-1634917694906-ce32fa906bfb?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=464&q=80",
+            "https://images.unsplash.com/photo-1634917694906-ce32fa906bfb?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=464&q=80",
+            "https://images.unsplash.com/photo-1634917694906-ce32fa906bfb?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=464&q=80",
+
+        ))
+    }
+
+    @OptIn(ExperimentalFoundationApi::class)
+    @Composable
+    fun ResultContent(list : List<String>){
+        val pagedResult = mainViewModel.fetchDefaultCollection().collectAsLazyPagingItems()
+        pagedResult.apply {
+            when{
+                loadState.refresh is LoadState.Loading -> {
+                    //You can add modifier to manage load state when first time response page is loading
+                    Timber.d("State : Loading")
+                }
+                loadState.append is LoadState.NotLoading -> {
+                    //You can add modifier to manage load state when next response page is loading
+                    Timber.d("State : Not Loading")
+
+                }
+                loadState.append is LoadState.Error -> {
+                    //You can use modifier to show error message
+                    Timber.d("State : Error")
+
+                }
+            }
+        }
+        LazyColumn(){
+            items(pagedResult){item ->
+                item?.image_urls?.regular?.let { PhotoItem(url = it) }
+            }
+        }
+
+    }
+
+    @Composable
+    fun PhotoItem(url : String) {
+        val rememberPainter = rememberImagePainter(url)
+        Image(
+            painter = rememberPainter,
+            contentDescription = null,
+            modifier = Modifier
+                .fillMaxWidth(),
+            contentScale = ContentScale.Crop
+        )
+    }
+    
     private fun getCollection() {
         /**
          * Initiates a request to get the default star wars collection. The data recieved is then sent to the CoSplashPhotoAdapter
          * */
         viewLifecycleOwner.lifecycleScope.launch {
             mainViewModel.fetchDefaultCollection().collect {
-                adapter.submitData(viewLifecycleOwner.lifecycle, it)
             }
+
         }
     }
 
@@ -95,69 +188,69 @@ class HomeFragment : Fragment(), OnItemClick {
 
         setupSearchBox()
 
-        setupRecyclerView()
+        //setupRecyclerView()
 
     }
 
-    private fun setupRecyclerView() {
-        adapter = CoSplashPhotoAdapter(this)
-
-        val headerAdapter = PagingLoadStateAdapter { adapter.retry() }
-        val footerAdapter = PagingLoadStateAdapter { adapter.retry() }
-
-        val concatAdapter = adapter.withLoadStateHeaderAndFooter(
-            header = headerAdapter,
-            footer = footerAdapter
-        )
-
-        val gridLayoutManager = GridLayoutManager(context, 2)
-
-        binding.apply {
-            recyclerView.adapter = concatAdapter
-            recyclerView.layoutManager = gridLayoutManager
-
-            gridLayoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
-                override fun getSpanSize(position: Int): Int {
-                    return if (position == 0 && headerAdapter.itemCount > 0) {
-                        2
-                        /**
-                        If we are at first position and header exists,
-                        set span size to 2 so that the entire width is taken
-                         **/
-
-                    } else if (position == concatAdapter.itemCount - 1 && footerAdapter.itemCount > 0) {
-                        2
-
-                        /**
-                        If we are last position and footer exists,
-                        set span size to 2 so that the entire width is taken
-                         **/
-
-                    } else {
-                        1
-
-                    }
-                }
-            }
-
-        }
-
-
-        adapter.addLoadStateListener { combinedLoadStates ->
-            binding.apply {
-                progressCircular.isVisible = combinedLoadStates.source.refresh is LoadState.Loading
-                recyclerView.isVisible = combinedLoadStates.source.refresh is LoadState.NotLoading
-                retryButton.isVisible = combinedLoadStates.source.refresh is LoadState.Error
-                loadStateCollectionText.isVisible =
-                    combinedLoadStates.source.refresh is LoadState.Error
-            }
-
-        }
-
-        binding.retryButton.setOnClickListener {
-            adapter.retry()
-        }
-    }
+//    private fun setupRecyclerView() {
+//        adapter = CoSplashPhotoAdapter(this)
+//
+//        val headerAdapter = PagingLoadStateAdapter { adapter.retry() }
+//        val footerAdapter = PagingLoadStateAdapter { adapter.retry() }
+//
+//        val concatAdapter = adapter.withLoadStateHeaderAndFooter(
+//            header = headerAdapter,
+//            footer = footerAdapter
+//        )
+//
+//        val gridLayoutManager = GridLayoutManager(context, 2)
+//
+//        binding.apply {
+//            recyclerView.adapter = concatAdapter
+//            recyclerView.layoutManager = gridLayoutManager
+//
+//            gridLayoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
+//                override fun getSpanSize(position: Int): Int {
+//                    return if (position == 0 && headerAdapter.itemCount > 0) {
+//                        2
+//                        /**
+//                        If we are at first position and header exists,
+//                        set span size to 2 so that the entire width is taken
+//                         **/
+//
+//                    } else if (position == concatAdapter.itemCount - 1 && footerAdapter.itemCount > 0) {
+//                        2
+//
+//                        /**
+//                        If we are last position and footer exists,
+//                        set span size to 2 so that the entire width is taken
+//                         **/
+//
+//                    } else {
+//                        1
+//
+//                    }
+//                }
+//            }
+//
+//        }
+//
+//
+//        adapter.addLoadStateListener { combinedLoadStates ->
+//            binding.apply {
+//                progressCircular.isVisible = combinedLoadStates.source.refresh is LoadState.Loading
+//                recyclerView.isVisible = combinedLoadStates.source.refresh is LoadState.NotLoading
+//                retryButton.isVisible = combinedLoadStates.source.refresh is LoadState.Error
+//                loadStateCollectionText.isVisible =
+//                    combinedLoadStates.source.refresh is LoadState.Error
+//            }
+//
+//        }
+//
+//        binding.retryButton.setOnClickListener {
+//            adapter.retry()
+//        }
+//    }
 
     private fun setupSearchBox() {
         searchBoxTextInput.setOnEditorActionListener { v, actionId, _ ->

@@ -5,31 +5,23 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.isVisible
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.fragment.navArgs
 import androidx.paging.LoadState
 import androidx.recyclerview.widget.GridLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.button.MaterialButtonToggleGroup
 import com.sivan.cosplash.R
 import com.sivan.cosplash.databinding.FragmentSearchBinding
-import com.sivan.cosplash.data.FilterOptions
 import com.sivan.cosplash.data.Photo
-import com.sivan.cosplash.network.entity.UnsplashPhotoEntity
-import com.sivan.cosplash.paging.PagingLoadStateAdapter
-import com.sivan.cosplash.room.entity.FavouriteCacheEntity
 import com.sivan.cosplash.util.OnItemClick
 import com.sivan.cosplash.util.RadioGridGroup
 import com.sivan.cosplash.util.hideKeyboard
 import com.sivan.cosplash.viewmodel.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -54,8 +46,6 @@ class SearchFragment : Fragment(), OnItemClick {
 
     val mainViewModel: MainViewModel by hiltNavGraphViewModels(R.id.nav_graph)
 
-    lateinit var adapter: CoSplashPhotoAdapter
-
     var COLOR_STATE: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -75,7 +65,7 @@ class SearchFragment : Fragment(), OnItemClick {
 
         initFilterSheet()
 
-        initRecyclerView()
+       // initRecyclerView()
 
         initToolbar()
 
@@ -116,109 +106,96 @@ class SearchFragment : Fragment(), OnItemClick {
 
     }
 
-    private fun initRecyclerView() {
-        adapter = CoSplashPhotoAdapter(this)
-        val headerAdapter = PagingLoadStateAdapter { adapter.retry() }
-        val footerAdapter = PagingLoadStateAdapter { adapter.retry() }
-
-        val concatAdapter = adapter.withLoadStateHeaderAndFooter(
-            header = headerAdapter,
-            footer = footerAdapter
-        )
-
-        val gridLayoutManager = GridLayoutManager(context, 2)
-        listenLoadStateText()
-
-        binding.apply {
-            searchResultRecyclerView.adapter = concatAdapter
-            searchResultRecyclerView.layoutManager = gridLayoutManager
-
-            gridLayoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
-                override fun getSpanSize(position: Int): Int {
-                    return if (position == 0 && headerAdapter.itemCount > 0) {
-                        2
-
-                        /**
-                            If we are at first position and header exists,
-                            set span size to 2 so that the entire width is taken
-                         **/
-
-                    } else if (position == concatAdapter.itemCount - 1 && footerAdapter.itemCount > 0) {
-                        2
-                        /**
-                            If we are last position and footer exists,
-                            set span size to 2 so that the entire width is taken
-                        **/
-
-                    } else {
-                        1
-
-                    }
-                }
-            }
-
-            retryButton.setOnClickListener {
-                adapter.retry()
-            }
-        }
-
-        adapter.addLoadStateListener { combinedLoadStates ->
-            /**
-             *
-             * We listen for any load state changes of our CoSplashPhotoAdapter here.
-             * This result is used to show appropriate UI while the adapter is refreshing, loading and displaying data.
-             *
-             **/
-
-            binding.apply {
-                progressCircular.isVisible = combinedLoadStates.source.refresh is LoadState.Loading
-                searchResultRecyclerView.isVisible = combinedLoadStates.source.refresh is LoadState.NotLoading
-                retryButton.isVisible = combinedLoadStates.source.refresh is LoadState.Error
-
-                if (combinedLoadStates.source.refresh is LoadState.Error) {
-                    /**
-                     *  When we experience a Load error - most probably a network error where we cannot load data from the Unsplash API
-                     **/
-
-                    loadStateCollectionText.isVisible = true
-                    mainViewModel.setLoadStateText(resources.getString(R.string.search_load_state_error))
-
-                } else {
-                    if (combinedLoadStates.source.refresh is LoadState.NotLoading &&
-                        combinedLoadStates.append.endOfPaginationReached
-                        && adapter.itemCount < 1
-                    ) {
-                        /**
-                         *  When the request is a success but our paging data has no results
-                         **/
-                        searchResultRecyclerView.isVisible = false
-                        loadStateCollectionText.isVisible = true
-                        mainViewModel.setLoadStateText("Hmmm. We could not find any matching results for \"${toolbar.title}\". Please check for typos in your search term or try changing the filters")
-
-                    } else {
-                        /**
-                         *  When the request is a success and we have some result
-                         **/
-
-                        loadStateCollectionText.isVisible = false
-                    }
-                }
-            }
-        }
-        getSearchResults()
-    }
-
-    private fun getSearchResults() {
-        /**
-         *  Observes for changes in our viewmodel and returns the latest paging data. The data is then sent to our CoSplashPhotoAdapter
-         **/
-
-        viewLifecycleOwner.lifecycleScope.launch {
-            mainViewModel.searchOptions.observe(viewLifecycleOwner, {
-                adapter.submitData(viewLifecycleOwner.lifecycle, it)
-            })
-        }
-    }
+//    private fun initRecyclerView() {
+//        adapter = CoSplashPhotoAdapter(this)
+//        val headerAdapter = PagingLoadStateAdapter { adapter.retry() }
+//        val footerAdapter = PagingLoadStateAdapter { adapter.retry() }
+//
+//        val concatAdapter = adapter.withLoadStateHeaderAndFooter(
+//            header = headerAdapter,
+//            footer = footerAdapter
+//        )
+//
+//        val gridLayoutManager = GridLayoutManager(context, 2)
+//        listenLoadStateText()
+//
+//        binding.apply {
+//            searchResultRecyclerView.adapter = concatAdapter
+//            searchResultRecyclerView.layoutManager = gridLayoutManager
+//
+//            gridLayoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
+//                override fun getSpanSize(position: Int): Int {
+//                    return if (position == 0 && headerAdapter.itemCount > 0) {
+//                        2
+//
+//                        /**
+//                            If we are at first position and header exists,
+//                            set span size to 2 so that the entire width is taken
+//                         **/
+//
+//                    } else if (position == concatAdapter.itemCount - 1 && footerAdapter.itemCount > 0) {
+//                        2
+//                        /**
+//                            If we are last position and footer exists,
+//                            set span size to 2 so that the entire width is taken
+//                        **/
+//
+//                    } else {
+//                        1
+//
+//                    }
+//                }
+//            }
+//
+//            retryButton.setOnClickListener {
+//                //adapter.retry()
+//            }
+//        }
+//
+////        adapter.addLoadStateListener { combinedLoadStates ->
+////            /**
+////             *
+////             * We listen for any load state changes of our CoSplashPhotoAdapter here.
+////             * This result is used to show appropriate UI while the adapter is refreshing, loading and displaying data.
+////             *
+////             **/
+////
+////            binding.apply {
+////                progressCircular.isVisible = combinedLoadStates.source.refresh is LoadState.Loading
+////                searchResultRecyclerView.isVisible = combinedLoadStates.source.refresh is LoadState.NotLoading
+////                retryButton.isVisible = combinedLoadStates.source.refresh is LoadState.Error
+////
+////                if (combinedLoadStates.source.refresh is LoadState.Error) {
+////                    /**
+////                     *  When we experience a Load error - most probably a network error where we cannot load data from the Unsplash API
+////                     **/
+////
+////                    loadStateCollectionText.isVisible = true
+////                    mainViewModel.setLoadStateText(resources.getString(R.string.search_load_state_error))
+////
+////                } else {
+////                    if (combinedLoadStates.source.refresh is LoadState.NotLoading &&
+////                        combinedLoadStates.append.endOfPaginationReached
+////                        && adapter.itemCount < 1
+////                    ) {
+////                        /**
+////                         *  When the request is a success but our paging data has no results
+////                         **/
+////                        searchResultRecyclerView.isVisible = false
+////                        loadStateCollectionText.isVisible = true
+////                        mainViewModel.setLoadStateText("Hmmm. We could not find any matching results for \"${toolbar.title}\". Please check for typos in your search term or try changing the filters")
+////
+////                    } else {
+////                        /**
+////                         *  When the request is a success and we have some result
+////                         **/
+////
+////                        loadStateCollectionText.isVisible = false
+////                    }
+////                }
+////            }
+////        }
+//    }
 
 
     private fun initFilterSheet() {
