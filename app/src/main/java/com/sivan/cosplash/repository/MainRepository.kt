@@ -6,8 +6,6 @@ import com.sivan.cosplash.data.FilterOptions
 import com.sivan.cosplash.network.CoSplashInterface
 import com.sivan.cosplash.network.entity.UnsplashPhotoEntity
 import com.sivan.cosplash.paging.CoSplashPagingSource
-import com.sivan.cosplash.paging.SplashPagingSource
-import com.sivan.cosplash.paging.SplashPagingSourceV2
 import com.sivan.cosplash.room.dao.FavouritesDao
 import com.sivan.cosplash.room.entity.FavouriteCacheEntity
 import kotlinx.coroutines.flow.Flow
