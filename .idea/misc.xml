@@ -16,6 +16,9 @@
         <entry key="..\:/Android/Projects/CoSplash/app/src/main/res/layout/photo_item.xml" value="0.2" />
         <entry key="..\:/Android/Projects/CoSplash/app/src/main/res/menu/menu_filter_toolbar.xml" value="0.22760416666666666" />
         <entry key="..\:/Android/Projects/CoSplash/app/src/main/res/menu/menu_serach_toolbar.xml" value="0.2916666666666667" />
+        <entry key="app/src/main/res/layout/fragment_favourites.xml" value="0.11367753623188406" />
+        <entry key="app/src/main/res/layout/fragment_home.xml" value="0.12552083333333333" />
+        <entry key="app/src/main/res/layout/photo_item.xml" value="0.12552083333333333" />
       </map>
     </option>
   </component>

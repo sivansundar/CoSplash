@@ -5,10 +5,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.paging.LoadState
 import androidx.paging.map
 import androidx.recyclerview.widget.GridLayoutManager
 import com.sivan.cosplash.R
@@ -18,6 +20,7 @@ import com.sivan.cosplash.paging.PagingLoadStateAdapter
 import com.sivan.cosplash.util.OnItemClick
 import com.sivan.cosplash.viewmodel.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -59,7 +62,6 @@ class FavouritesFragment : Fragment(), OnItemClick {
     ): View? {
         // Inflate the layout for this fragment
         binding = FragmentFavouritesBinding.inflate(inflater)
-
         setupRecyclerView()
 
         getFavouritesList()
@@ -81,20 +83,7 @@ class FavouritesFragment : Fragment(), OnItemClick {
         }
     }
 
-//        adapter.addLoadStateListener { combinedLoadStates ->
-//            binding.apply {
-//                progressCircular.isVisible = combinedLoadStates.source.refresh is LoadState.Loading
-//                recyclerView.isVisible = combinedLoadStates.source.refresh is LoadState.NotLoading
-//                retryButton.isVisible = combinedLoadStates.source.refresh is LoadState.Error
-//                loadStateCollectionText.isVisible =
-//                    combinedLoadStates.source.refresh is LoadState.Error
-//            }
-//
-//        }
-//
-//        binding.retryButton.setOnClickListener {
-//            adapter.retry()
-//        }
+
 
     private fun getFavouritesList() {
         lifecycleScope.launch {
