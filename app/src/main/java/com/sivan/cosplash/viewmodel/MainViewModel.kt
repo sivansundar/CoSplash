@@ -1,6 +1,10 @@
 package com.sivan.cosplash.viewmodel
 
-import androidx.lifecycle.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.switchMap
+import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.sivan.cosplash.data.FilterOptions
@@ -8,7 +12,7 @@ import com.sivan.cosplash.network.entity.UnsplashPhotoEntity
 import com.sivan.cosplash.repository.MainRepository
 import com.sivan.cosplash.room.entity.FavouriteCacheEntity
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
@@ -29,13 +33,13 @@ class MainViewModel @Inject constructor(
      * */
 
     private val _selectionState = MutableLiveData<Boolean>(false) // Holds an initial state of false
-    val selectionState : LiveData<Boolean> = _selectionState
+    val selectionState: LiveData<Boolean> = _selectionState
 
-    suspend fun getFavItem(id : String) {
+    suspend fun getFavItem(id: String) {
         setSelectionState(repository.checkIfItemExists(id))
     }
 
-    suspend fun getFavouritesList(): Flow<PagingData<FavouriteCacheEntity>> {
+    suspend fun getFavouritesList(): kotlinx.coroutines.flow.Flow<PagingData<FavouriteCacheEntity>> {
         return repository.getPagedFavList().cachedIn(viewModelScope)
     }
 
@@ -44,20 +48,19 @@ class MainViewModel @Inject constructor(
         setSelectionState(true)
     }
 
-    suspend fun removeFavouriteItem(id : String) {
+    suspend fun removeFavouriteItem(id: String) {
         _selectionState.value = repository.removeFavouriteItem(id)
         setSelectionState(false)
-
     }
 
-    private fun setSelectionState(state : Boolean) {
-        Timber.d("Selection state from VM : ${state}")
+    private fun setSelectionState(state: Boolean) {
+        Timber.d("Selection state from VM : $state")
         _selectionState.value = state
     }
 
     private val currentFilter = MutableLiveData<FilterOptions>()
     val searchOptions = currentFilter.switchMap {
-        Timber.d("Filter options : ${it}")
+        Timber.d("Filter options : $it")
         repository.searchPhotos(it).cachedIn(viewModelScope)
     }
 
@@ -66,7 +69,6 @@ class MainViewModel @Inject constructor(
             currentFilter.value = filterOptions
             Timber.d("Filter options VM : ${currentFilter.value}")
         }
-
     }
 
     fun updateFilter() {
@@ -133,7 +135,6 @@ class MainViewModel @Inject constructor(
         }
     }
 
-
     fun clearFilterOptions() {
         updateContentFilter("")
         updateOrientation("")
@@ -141,13 +142,10 @@ class MainViewModel @Inject constructor(
         updateColor("")
     }
 
-
     companion object {
         /**
          * @param DEFAULT_COLLECTION_ID points to the default "Star Wars" collection
          */
         private const val DEFAULT_COLLECTION_ID = 2423569
-
     }
-
 }

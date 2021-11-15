@@ -12,10 +12,9 @@ import com.sivan.cosplash.network.entity.UnsplashPhotoEntity
 import com.sivan.cosplash.network.entity.toPhoto
 import com.sivan.cosplash.util.OnItemClick
 
-class CoSplashPhotoAdapter(private val listener : OnItemClick) : PagingDataAdapter<UnsplashPhotoEntity, CoSplashPhotoAdapter.PhotoViewHolder>(
+class CoSplashPhotoAdapter(private val listener: OnItemClick) : PagingDataAdapter<UnsplashPhotoEntity, CoSplashPhotoAdapter.PhotoViewHolder>(
     PHOTO_COMPARATOR
 ) {
-
 
     override fun onBindViewHolder(holder: PhotoViewHolder, position: Int) {
         val currentItem = getItem(position)
@@ -30,9 +29,8 @@ class CoSplashPhotoAdapter(private val listener : OnItemClick) : PagingDataAdapt
         return PhotoViewHolder(binding)
     }
 
-
     inner class PhotoViewHolder(private val binding: PhotoItemBinding) :
-        RecyclerView.ViewHolder(binding.root){
+        RecyclerView.ViewHolder(binding.root) {
 
         init {
             binding.root.setOnClickListener {
@@ -44,10 +42,9 @@ class CoSplashPhotoAdapter(private val listener : OnItemClick) : PagingDataAdapt
                     }
                 }
             }
-
         }
 
-        fun bind(photo : UnsplashPhotoEntity) {
+        fun bind(photo: UnsplashPhotoEntity) {
             binding.apply {
                 imageView.load(photo.image_urls.thumb) {
                     crossfade(true)
@@ -55,7 +52,6 @@ class CoSplashPhotoAdapter(private val listener : OnItemClick) : PagingDataAdapt
                     error(R.drawable.ic_baseline_error_outline_72)
                 }
             }
-
         }
     }
 

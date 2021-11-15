@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
-import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
@@ -17,16 +16,13 @@ import com.google.android.material.textfield.TextInputEditText
 import com.sivan.cosplash.R
 import com.sivan.cosplash.data.Photo
 import com.sivan.cosplash.databinding.FragmentHomeBinding
-import com.sivan.cosplash.network.entity.UnsplashPhotoEntity
 import com.sivan.cosplash.paging.PagingLoadStateAdapter
-import com.sivan.cosplash.room.entity.FavouriteCacheEntity
 import com.sivan.cosplash.util.OnItemClick
 import com.sivan.cosplash.util.hideKeyboard
 import com.sivan.cosplash.viewmodel.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import timber.log.Timber
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -60,9 +56,9 @@ class HomeFragment : Fragment(), OnItemClick {
         }
     }
 
-
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
@@ -96,7 +92,6 @@ class HomeFragment : Fragment(), OnItemClick {
         setupSearchBox()
 
         setupRecyclerView()
-
     }
 
     private fun setupRecyclerView() {
@@ -121,27 +116,22 @@ class HomeFragment : Fragment(), OnItemClick {
                     return if (position == 0 && headerAdapter.itemCount > 0) {
                         2
                         /**
-                        If we are at first position and header exists,
-                        set span size to 2 so that the entire width is taken
+                         If we are at first position and header exists,
+                         set span size to 2 so that the entire width is taken
                          **/
-
                     } else if (position == concatAdapter.itemCount - 1 && footerAdapter.itemCount > 0) {
                         2
 
                         /**
-                        If we are last position and footer exists,
-                        set span size to 2 so that the entire width is taken
+                         If we are last position and footer exists,
+                         set span size to 2 so that the entire width is taken
                          **/
-
                     } else {
                         1
-
                     }
                 }
             }
-
         }
-
 
         adapter.addLoadStateListener { combinedLoadStates ->
             binding.apply {
@@ -151,7 +141,6 @@ class HomeFragment : Fragment(), OnItemClick {
                 loadStateCollectionText.isVisible =
                     combinedLoadStates.source.refresh is LoadState.Error
             }
-
         }
 
         binding.retryButton.setOnClickListener {
@@ -184,7 +173,6 @@ class HomeFragment : Fragment(), OnItemClick {
     private fun updateFilterOptions(searchText: String) {
         mainViewModel.updateQuery(searchText)
         mainViewModel.updateFilter()
-
     }
 
     companion object {
@@ -211,6 +199,5 @@ class HomeFragment : Fragment(), OnItemClick {
         // Handles image clicks from the recyclerView. We can use this to navigate to another fragment
         val action = HomeFragmentDirections.actionHomeFragmentToDetailsFragment(photo)
         findNavController().navigate(action)
-
     }
 }

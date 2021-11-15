@@ -8,5 +8,5 @@ import com.sivan.cosplash.room.entity.FavouriteCacheEntity
 @Database(entities = [FavouriteCacheEntity::class], version = 1)
 abstract class CoSplashDatabase : RoomDatabase() {
 
-    abstract fun favDao() : FavouritesDao
+    abstract fun favDao(): FavouritesDao
 }

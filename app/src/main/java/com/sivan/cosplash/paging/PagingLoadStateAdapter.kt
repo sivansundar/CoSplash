@@ -3,13 +3,12 @@ package com.sivan.cosplash.paging
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.isVisible
 import androidx.paging.LoadState
 import androidx.paging.LoadStateAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.sivan.cosplash.databinding.ListItemFooterBinding
 
-class PagingLoadStateAdapter(private val retry : () -> Unit) : LoadStateAdapter<PagingLoadStateAdapter.LoadStateViewHolder>() {
+class PagingLoadStateAdapter(private val retry: () -> Unit) : LoadStateAdapter<PagingLoadStateAdapter.LoadStateViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, loadState: LoadState): LoadStateViewHolder {
         val binding = ListItemFooterBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -21,9 +20,7 @@ class PagingLoadStateAdapter(private val retry : () -> Unit) : LoadStateAdapter<
         holder.bind(loadState)
     }
 
-
-
-    inner class LoadStateViewHolder(private val binding : ListItemFooterBinding) : RecyclerView.ViewHolder(binding.root) {
+    inner class LoadStateViewHolder(private val binding: ListItemFooterBinding) : RecyclerView.ViewHolder(binding.root) {
 
         init {
             binding.retryButton.setOnClickListener {
@@ -33,7 +30,7 @@ class PagingLoadStateAdapter(private val retry : () -> Unit) : LoadStateAdapter<
 
         fun bind(loadState: LoadState) {
 
-            when(loadState) {
+            when (loadState) {
                 is LoadState.Loading -> {
                     binding.apply {
                         progressCircular.visibility = View.VISIBLE

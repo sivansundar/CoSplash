@@ -2,7 +2,6 @@ package com.sivan.cosplash.di
 
 import android.content.Context
 import androidx.room.Room
-import androidx.room.RoomDatabase
 import com.sivan.cosplash.room.CoSplashDatabase
 import com.sivan.cosplash.room.dao.FavouritesDao
 import dagger.Module
@@ -18,7 +17,7 @@ object RoomModule {
 
     @Provides
     @Singleton
-    fun provideCoSplashDatabase(@ApplicationContext context : Context) : CoSplashDatabase {
+    fun provideCoSplashDatabase(@ApplicationContext context: Context): CoSplashDatabase {
         return Room.databaseBuilder(
             context,
             CoSplashDatabase::class.java,
@@ -26,10 +25,9 @@ object RoomModule {
         ).build()
     }
 
-
     @Provides
     @Singleton
-    fun provideFavouritesDao(coSplashDatabase: CoSplashDatabase) : FavouritesDao {
+    fun provideFavouritesDao(coSplashDatabase: CoSplashDatabase): FavouritesDao {
         return coSplashDatabase.favDao()
     }
 }

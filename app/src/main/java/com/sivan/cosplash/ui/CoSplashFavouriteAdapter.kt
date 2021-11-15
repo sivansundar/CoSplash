@@ -15,10 +15,9 @@ import com.sivan.cosplash.ui.CoSplashFavouriteAdapter.*
 import com.sivan.cosplash.util.OnItemClick
 import kotlinx.serialization.json.Json
 
-class CoSplashFavouriteAdapter(private val listener : OnItemClick) : PagingDataAdapter<FavouriteCacheEntity, FavViewHolder>(
-     PHOTO_COMPARATOR
+class CoSplashFavouriteAdapter(private val listener: OnItemClick) : PagingDataAdapter<FavouriteCacheEntity, FavViewHolder>(
+    PHOTO_COMPARATOR
 ) {
-
 
     override fun onBindViewHolder(holder: FavViewHolder, position: Int) {
         val currentItem = getItem(position)
@@ -59,7 +58,6 @@ class CoSplashFavouriteAdapter(private val listener : OnItemClick) : PagingDataA
         }
     }
 
-
     companion object {
         private val PHOTO_COMPARATOR = object : DiffUtil.ItemCallback<FavouriteCacheEntity>() {
             override fun areItemsTheSame(oldItem: FavouriteCacheEntity, newItem: FavouriteCacheEntity) =
@@ -69,5 +67,4 @@ class CoSplashFavouriteAdapter(private val listener : OnItemClick) : PagingDataA
                 oldItem == newItem
         }
     }
-
 }

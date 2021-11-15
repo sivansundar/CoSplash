@@ -24,7 +24,6 @@ import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import timber.log.Timber
 
-
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 private const val ARG_PARAM1 = "param1"
@@ -48,7 +47,6 @@ class DetailsFragment : Fragment() {
 
     private val mainViewModel: MainViewModel by hiltNavGraphViewModels(R.id.nav_graph)
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -58,7 +56,8 @@ class DetailsFragment : Fragment() {
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
@@ -105,7 +104,7 @@ class DetailsFragment : Fragment() {
             mainViewModel.getFavItem(photos.id)
 
             mainViewModel.selectionState.observe(viewLifecycleOwner, {
-                Timber.d("Checked state : ${it}")
+                Timber.d("Checked state : $it")
                 binding.checkBox.isChecked = it
             })
         }
@@ -119,7 +118,6 @@ class DetailsFragment : Fragment() {
                 } else {
                     removeFromFav(photos.id)
                     Toast.makeText(context, "This photo was removed from your favourites list", Toast.LENGTH_SHORT).show()
-
                 }
             }
         }
@@ -134,7 +132,6 @@ class DetailsFragment : Fragment() {
     private fun changeProgressIndicatorVisibility(state: Boolean) {
         binding.progressCircular.isVisible = state
     }
-
 
     companion object {
         /**

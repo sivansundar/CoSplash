@@ -11,11 +11,9 @@ import kotlinx.serialization.Serializable
 data class UserEntity(
     @SerializedName("id")
     @Expose
-    val id : String,
+    val id: String,
 
     @SerializedName("username")
     @Expose
-    val username : String
-) : Parcelable {
-
-}
+    val username: String
+) : Parcelable

@@ -159,7 +159,8 @@ class RadioGridGroup : GridLayout {
                     child.setId(id)
                 }
                 child.setOnCheckedChangeListener(
-                    childOnCheckedChangeListener)
+                    childOnCheckedChangeListener
+                )
             }
             mOnHierarchyChangeListener?.onChildViewAdded(parent, child)
         }

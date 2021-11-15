@@ -1,28 +1,23 @@
 package com.sivan.cosplash.ui
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.core.view.isVisible
+import androidx.fragment.app.Fragment
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import androidx.paging.LoadState
 import androidx.paging.map
 import androidx.recyclerview.widget.GridLayoutManager
 import com.sivan.cosplash.R
 import com.sivan.cosplash.data.Photo
 import com.sivan.cosplash.databinding.FragmentFavouritesBinding
-import com.sivan.cosplash.network.entity.UnsplashPhotoEntity
 import com.sivan.cosplash.paging.PagingLoadStateAdapter
-import com.sivan.cosplash.room.entity.FavouriteCacheEntity
 import com.sivan.cosplash.util.OnItemClick
 import com.sivan.cosplash.viewmodel.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -45,7 +40,7 @@ class FavouritesFragment : Fragment(), OnItemClick {
 
     private val mainViewModel: MainViewModel by hiltNavGraphViewModels(R.id.nav_graph)
 
-    lateinit var binding : FragmentFavouritesBinding
+    lateinit var binding: FragmentFavouritesBinding
 
     lateinit var adapter: CoSplashFavouriteAdapter
 
@@ -58,7 +53,8 @@ class FavouritesFragment : Fragment(), OnItemClick {
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
@@ -67,7 +63,6 @@ class FavouritesFragment : Fragment(), OnItemClick {
         setupRecyclerView()
 
         getFavouritesList()
-
 
         return binding.root
     }
@@ -83,13 +78,8 @@ class FavouritesFragment : Fragment(), OnItemClick {
         binding.apply {
             favouritesRV.adapter = adapter
             favouritesRV.layoutManager = gridLayoutManager
-
         }
-
-
     }
-
-
 
 //        adapter.addLoadStateListener { combinedLoadStates ->
 //            binding.apply {
@@ -114,10 +104,8 @@ class FavouritesFragment : Fragment(), OnItemClick {
                 val res = it.map { item ->
                     item.id
                 }
-                Toast.makeText(context, "List : ${res}", Toast.LENGTH_SHORT).show()
-
+                Toast.makeText(context, "List : $res", Toast.LENGTH_SHORT).show()
             }
-
         }
     }
 
@@ -142,7 +130,7 @@ class FavouritesFragment : Fragment(), OnItemClick {
     }
 
     override fun onItemClick(photo: Photo) {
-         val action = FavouritesFragmentDirections.actionFavouritesFragmentToDetailsFragment(photo)
-         findNavController().navigate(action)
+        val action = FavouritesFragmentDirections.actionFavouritesFragmentToDetailsFragment(photo)
+        findNavController().navigate(action)
     }
 }

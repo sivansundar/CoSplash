@@ -1,35 +1,28 @@
 package com.sivan.cosplash.ui
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.isVisible
+import androidx.fragment.app.Fragment
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.fragment.navArgs
 import androidx.paging.LoadState
 import androidx.recyclerview.widget.GridLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.button.MaterialButtonToggleGroup
 import com.sivan.cosplash.R
-import com.sivan.cosplash.databinding.FragmentSearchBinding
-import com.sivan.cosplash.data.FilterOptions
 import com.sivan.cosplash.data.Photo
-import com.sivan.cosplash.network.entity.UnsplashPhotoEntity
+import com.sivan.cosplash.databinding.FragmentSearchBinding
 import com.sivan.cosplash.paging.PagingLoadStateAdapter
-import com.sivan.cosplash.room.entity.FavouriteCacheEntity
 import com.sivan.cosplash.util.OnItemClick
 import com.sivan.cosplash.util.RadioGridGroup
 import com.sivan.cosplash.util.hideKeyboard
 import com.sivan.cosplash.viewmodel.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -67,7 +60,8 @@ class SearchFragment : Fragment(), OnItemClick {
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
@@ -85,10 +79,9 @@ class SearchFragment : Fragment(), OnItemClick {
     private fun initToolbar() {
 
         mainViewModel._query.observe(viewLifecycleOwner, {
-            //Observes changes on the query field and updates toolbar title and the search box under the filter sheet
+            // Observes changes on the query field and updates toolbar title and the search box under the filter sheet
             binding.toolbar.title = it
             binding.filterBottomSheetRootLayout.editQueryTextInput.setText(it)
-
         })
 
         binding.apply {
@@ -112,8 +105,6 @@ class SearchFragment : Fragment(), OnItemClick {
             Timber.d("Load state text : $it")
             binding.loadStateCollectionText.text = it
         })
-
-
     }
 
     private fun initRecyclerView() {
@@ -139,20 +130,17 @@ class SearchFragment : Fragment(), OnItemClick {
                         2
 
                         /**
-                            If we are at first position and header exists,
-                            set span size to 2 so that the entire width is taken
+                         If we are at first position and header exists,
+                         set span size to 2 so that the entire width is taken
                          **/
-
                     } else if (position == concatAdapter.itemCount - 1 && footerAdapter.itemCount > 0) {
                         2
                         /**
-                            If we are last position and footer exists,
-                            set span size to 2 so that the entire width is taken
-                        **/
-
+                         If we are last position and footer exists,
+                         set span size to 2 so that the entire width is taken
+                         **/
                     } else {
                         1
-
                     }
                 }
             }
@@ -182,11 +170,10 @@ class SearchFragment : Fragment(), OnItemClick {
 
                     loadStateCollectionText.isVisible = true
                     mainViewModel.setLoadStateText(resources.getString(R.string.search_load_state_error))
-
                 } else {
                     if (combinedLoadStates.source.refresh is LoadState.NotLoading &&
-                        combinedLoadStates.append.endOfPaginationReached
-                        && adapter.itemCount < 1
+                        combinedLoadStates.append.endOfPaginationReached &&
+                        adapter.itemCount < 1
                     ) {
                         /**
                          *  When the request is a success but our paging data has no results
@@ -194,7 +181,6 @@ class SearchFragment : Fragment(), OnItemClick {
                         searchResultRecyclerView.isVisible = false
                         loadStateCollectionText.isVisible = true
                         mainViewModel.setLoadStateText("Hmmm. We could not find any matching results for \"${toolbar.title}\". Please check for typos in your search term or try changing the filters")
-
                     } else {
                         /**
                          *  When the request is a success and we have some result
@@ -220,7 +206,6 @@ class SearchFragment : Fragment(), OnItemClick {
         }
     }
 
-
     private fun initFilterSheet() {
         /**
          *  This section handles all UI elements of the Bottom Filter Sheet.
@@ -229,25 +214,23 @@ class SearchFragment : Fragment(), OnItemClick {
         bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
 
         bottomSheetBehavior.addBottomSheetCallback(object :
-            BottomSheetBehavior.BottomSheetCallback() {
-            override fun onStateChanged(bottomSheet: View, newState: Int) {
+                BottomSheetBehavior.BottomSheetCallback() {
+                override fun onStateChanged(bottomSheet: View, newState: Int) {
 
-                when (newState) {
-                    BottomSheetBehavior.STATE_COLLAPSED -> {
-                        binding.filterCoordinatorLayout.isVisible = false
-                    }
+                    when (newState) {
+                        BottomSheetBehavior.STATE_COLLAPSED -> {
+                            binding.filterCoordinatorLayout.isVisible = false
+                        }
 
-                    BottomSheetBehavior.STATE_EXPANDED -> {
-                        binding.filterCoordinatorLayout.isVisible = true
-
+                        BottomSheetBehavior.STATE_EXPANDED -> {
+                            binding.filterCoordinatorLayout.isVisible = true
+                        }
                     }
                 }
-            }
 
-            override fun onSlide(bottomSheet: View, slideOffset: Float) {
-
-            }
-        })
+                override fun onSlide(bottomSheet: View, slideOffset: Float) {
+                }
+            })
 
         binding.filterBottomSheetRootLayout.apply {
             filterToolbar.setOnMenuItemClickListener {
@@ -281,7 +264,6 @@ class SearchFragment : Fragment(), OnItemClick {
                         COLOR_STATE = COLOR_TONES
                         changeTonesHolderVisibility(true)
                     }
-
                 }
             }
 
@@ -340,7 +322,6 @@ class SearchFragment : Fragment(), OnItemClick {
                 ORIENTATION_LANDSCAPE_KEY
             )
             R.id.orientation_square_button -> mainViewModel.updateOrientation(ORIENTATION_SQUARE_KEY)
-
         }
     }
 
@@ -371,7 +352,6 @@ class SearchFragment : Fragment(), OnItemClick {
             COLOR_BW -> mainViewModel.updateColor("black_and_white")
 
             COLOR_TONES -> updateSelectedTone(tonesToggleButtonGroup)
-
         }
     }
 
@@ -411,7 +391,6 @@ class SearchFragment : Fragment(), OnItemClick {
         findNavController().navigate(action)
     }
 
-
     companion object {
 
         private const val COLOR_ANY = 0
@@ -447,6 +426,4 @@ class SearchFragment : Fragment(), OnItemClick {
                 }
             }
     }
-
-
 }

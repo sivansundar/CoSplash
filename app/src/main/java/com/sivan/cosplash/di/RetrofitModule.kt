@@ -22,7 +22,7 @@ object RetrofitModule {
 
     @Singleton
     @Provides
-    fun provideGsonBuilder() : Gson {
+    fun provideGsonBuilder(): Gson {
         return GsonBuilder()
             .excludeFieldsWithoutExposeAnnotation()
             .create()
@@ -30,7 +30,7 @@ object RetrofitModule {
 
     @Singleton
     @Provides
-    fun provideRetrofit(gson : Gson) : Retrofit.Builder {
+    fun provideRetrofit(gson: Gson): Retrofit.Builder {
         return Retrofit.Builder()
             .baseUrl(BuildConfig.BASE_URL)
             .addConverterFactory(GsonConverterFactory.create(gson))
@@ -38,11 +38,12 @@ object RetrofitModule {
 
     @Singleton
     @Provides
-    fun provideCoSplashInterface(retrofit: Retrofit.Builder) : CoSplashInterface {
-
-        val logging = HttpLoggingInterceptor(HttpLoggingInterceptor.Logger {
-            Timber.tag("OkHttp").d(it)
-        })
+    fun provideCoSplashInterface(retrofit: Retrofit.Builder): CoSplashInterface {
+        val logging = HttpLoggingInterceptor(
+            HttpLoggingInterceptor.Logger {
+                Timber.tag("OkHttp").d(it)
+            }
+        )
 
         return retrofit.client(
             OkHttpClient.Builder()

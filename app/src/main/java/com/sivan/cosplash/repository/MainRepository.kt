@@ -15,7 +15,6 @@ import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
 
-
 const val TYPE_COLLECTION = 0
 const val TYPE_SEARCH = 1
 private const val DEFAULT_PAGE_INDEX = 1
@@ -25,16 +24,16 @@ private const val EXISTS = -1
 @Singleton
 class MainRepository @Inject constructor(
     private val coSplashInterface: CoSplashInterface,
-    private val favouritesDao: FavouritesDao) {
-
+    private val favouritesDao: FavouritesDao
+) {
 
 //    suspend fun getFavourites(): LiveData<List<FavouriteCacheEntity>> {
 //        return favouritesDao.getAllFavourites()
 //    }
 
-    suspend fun removeFavouriteItem(id : String): Boolean {
+    suspend fun removeFavouriteItem(id: String): Boolean {
         val removeItem = favouritesDao.deleteItem(id)
-        if (removeItem>0) {
+        if (removeItem> 0) {
             Timber.d("REMOVED : $removeItem")
         } else {
             Timber.d("REMOVED NOT : $removeItem")
@@ -69,8 +68,11 @@ class MainRepository @Inject constructor(
             PagingConfig(
                 pageSize = 10,
                 enablePlaceholders = false,
-                maxSize = 100)) {
-            favouritesDao.getAllFavourites() }
+                maxSize = 100
+            )
+        ) {
+            favouritesDao.getAllFavourites()
+        }
             .flow
     }
 
@@ -90,20 +92,15 @@ class MainRepository @Inject constructor(
             pagingSourceFactory = { CoSplashPagingSource(coSplashInterface, null, TYPE_COLLECTION) }
         ).flow
 
-
-     fun searchPhotos(query: FilterOptions): LiveData<PagingData<UnsplashPhotoEntity>> {
+    fun searchPhotos(query: FilterOptions): LiveData<PagingData<UnsplashPhotoEntity>> {
 
         return Pager(
-             config = PagingConfig(
-                 pageSize = 20,
-                 maxSize = 100,
-                 enablePlaceholders = false
-             ),
-             pagingSourceFactory = { CoSplashPagingSource(coSplashInterface, query, TYPE_SEARCH) }
-         ).liveData
-
-     }
-
-
-
+            config = PagingConfig(
+                pageSize = 20,
+                maxSize = 100,
+                enablePlaceholders = false
+            ),
+            pagingSourceFactory = { CoSplashPagingSource(coSplashInterface, query, TYPE_SEARCH) }
+        ).liveData
+    }
 }
