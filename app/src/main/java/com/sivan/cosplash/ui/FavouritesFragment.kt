@@ -5,12 +5,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import androidx.paging.LoadState
 import androidx.paging.map
 import androidx.recyclerview.widget.GridLayoutManager
 import com.sivan.cosplash.R
@@ -82,8 +80,6 @@ class FavouritesFragment : Fragment(), OnItemClick {
             favouritesRV.layoutManager = gridLayoutManager
         }
     }
-
-
 
     private fun getFavouritesList() {
         lifecycleScope.launch {
