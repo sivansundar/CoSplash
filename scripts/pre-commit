@@ -2,7 +2,7 @@
 
 echo "Running static analysis..."
 
-# Format code using KtLint, then run Detekt and KtLint static analysis
+# Format code using KtLintFormat, then KtLint static analysis
 ./gradlew app:ktlintFormat app:ktlintCheck --daemon --stacktrace
 
 status=$?

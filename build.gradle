@@ -29,11 +29,15 @@ task installGitHook(type: Copy) {
     fileMode 0777
 }
 
-allprojects {
-    apply plugin: "org.jlleitschuh.gradle.ktlint"
-
+afterEvaluate {
+    /**
+     * This block of code will make sure that the hook is installed before building the project.
+     * At anytime if we decide to change the hook, we can make changes to the files under the /scripts folder
+     * and the changes will be applied to all our devs when they pull the changes and build the project.
+     *
+     **/
+    tasks.getByPath(':app:preBuild').dependsOn(tasks.getByName("installGitHook"))
 }
-
 
 task clean(type: Delete) {
     delete rootProject.buildDir

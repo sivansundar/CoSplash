@@ -21,7 +21,9 @@ import javax.inject.Singleton
 object RetrofitModule {
 
     @Singleton
+
     @Provides
+
     fun provideGsonBuilder(): Gson {
         return GsonBuilder()
             .excludeFieldsWithoutExposeAnnotation()

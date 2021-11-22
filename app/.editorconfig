@@ -17,7 +17,7 @@ root = true
 # ij_wrap_on_typing = false
 
 [{*.gradle.kts,*.kt,*.kts,*.main.kts}]
-disabled_rules = no-wildcard-imports
+#disabled_rules = no-wildcard-imports
 # ij_kotlin_align_in_columns_case_branch = false
 # ij_kotlin_align_multiline_binary_operation = false
 # ij_kotlin_align_multiline_extends_list = false
